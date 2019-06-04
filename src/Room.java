@@ -22,4 +22,15 @@ public class Room {
         this.decor = decor;
         this.price = price;
     }
+
+    public void displayRoom() {
+        System.out.println("Room Name: " + roomName);
+        System.out.println("Popularity Score: " + popularity);
+        System.out.println("Type of room: " + type);
+        System.out.println("Type of bed: " + bedType);
+        System.out.println("Number of beds: " + numBeds);
+        System.out.println("Max occupants allowed: " + maxOcc);
+        System.out.println("Decor: " + decor);
+        System.out.println("Base Price: " + price);
+    }
 }

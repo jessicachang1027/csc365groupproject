@@ -23,4 +23,13 @@ public class Reservation {
         this.occupants = occupants;
         this.paymentId = paymentId;
     }
+
+    private void displayReservation() {
+        System.out.println("Reservation Number: " + reservationID);
+        System.out.println("Check in date: " + checkIn);
+        System.out.println("Check out date: " + checkOut);
+        System.out.println("Rate: " + rate);
+        System.out.println("Number of Occupants: " + occupants);
+        System.out.println();
+    }
 }
