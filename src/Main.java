@@ -7,11 +7,15 @@ import java.util.Set;
 
 public class Main {
 
+    private static String user = "";
+    private static Boolean success = false;
+
     private static void printHomeMenu() {
         System.out.println("Hotel Reservation System");
         System.out.println("Your options:");
         System.out.println("    Sign Up (s)");
         System.out.println("    Log In (l)");
+        System.out.println("    Quit (q)");
         System.out.print("Enter option from list: ");
     }
 
@@ -24,42 +28,56 @@ public class Main {
     }
 
     public static void main(String args[]) {
-        printHomeMenu();
-
         Scanner in = new Scanner(System.in);
-        String choice = in.next();
-        String firstName="a";
-        String lastName="l";
-        String username="e";
-        String password="x";
-        Customer customer = new Customer(firstName, lastName, username, password);
+
+        String choice;
+        String firstName;
+        String lastName;
+        String username;
+        String password;
         try {
             DaoManager dm = DaoManager.getInstance();
             Dao<Customer> customerDao = dm.getCustomerDao();
-            switch (choice) {
-                case "s":
-                    System.out.println("Enter First Name: ");
-                    firstName = in.next();
-                    System.out.println("Enter Last Name: ");
-                    lastName = in.next();
-                    System.out.println("Enter username: ");
-                    username = in.next();
-                    System.out.println("Enter password: ");
-                    password = in.next();
-                    customer = new Customer(firstName, lastName, username, password);
-                    customerDao.insert(customer);
-                    System.out.println("Welcome " + firstName + "!");
-                    dm.close();
-                    break;
-                case "l":
-                    System.out.println("Enter username: ");
-                    username = in.next();
-                    System.out.println("Enter password: ");
-                    password = in.next();
-                    customer = customerDao.getById(username);
-                    if (customer == null) System.out.println("User not found. Try again");
-                    else System.out.println("Welcome back " + customer.getFirstName() + "!");
-                    break;
+            while(!success) {
+                printHomeMenu();
+                choice = in.next();
+                switch (choice) {
+                    case "s":
+                        System.out.println("Enter First Name: ");
+                        firstName = in.next();
+                        System.out.println("Enter Last Name: ");
+                        lastName = in.next();
+                        System.out.println("Enter username: ");
+                        username = in.next();
+                        System.out.println("Enter password: ");
+                        password = in.next();
+                        Customer newCustomer = new Customer(firstName, lastName, username, password);
+                        success = customerDao.insert(newCustomer);
+                        if (!success) {
+                            System.out.println("Username has already been taken. Please try again!");
+                            break;
+                        }
+                        user = username;
+                        System.out.println("Welcome " + firstName + "!");
+                        dm.close();
+                    case "l":
+                        System.out.println("Enter username: ");
+                        username = in.next();
+                        System.out.println("Enter password: ");
+                        password = in.next();
+                        Customer customer = ((CustomerDaoImpl)customerDao).login(username, password);
+                        if (customer == null) {
+                            System.out.println("User not found/Incorrect password. Try again");
+                            success = false;
+                            break;
+                        }
+                        user = username;
+                        success = true;
+                        System.out.println("Welcome back " + customer.getFirstName() + "!");
+                    case "q":
+                        System.out.println("Thank you, bye!");
+                        System.exit(0);
+                }
             }
 
             printUserMenu();
