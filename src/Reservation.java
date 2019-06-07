@@ -27,7 +27,7 @@ public class Reservation {
         this.kids = kids;
     }
 
-    private void displayReservation() {
+    public void displayReservation() {
         System.out.println("Reservation Number: " + reservationID);
         System.out.println("Check in date: " + checkIn);
         System.out.println("Check out date: " + checkOut);
