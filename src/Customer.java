@@ -16,6 +16,10 @@ public class Customer {
         this.address = address;
     }
 
+    public Customer() {
+
+    }
+
     public Customer(String customerId, String name, String username, String password, String ssn, String address, String phone) {
         this.customerId = customerId;
         this.name = name;
