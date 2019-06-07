@@ -40,6 +40,36 @@ public class CustomerDaoImpl implements Dao<Customer> {
         return customer;
     }
 
+    public Customer login(String username, String password) {
+        Customer customer = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers WHERE username=? AND password=?");
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            resultSet = preparedStatement.executeQuery();
+            Set<Customer> customers = unpackResultSet(resultSet);
+            customer = (Customer)customers.toArray()[0];
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException e){
+            //e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return customer;
+    }
+
     public Set<Customer> getAll() {
         Set<Customer> customers = null;
         PreparedStatement preparedStatement = null;
@@ -81,7 +111,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
             preparedStatement.setString(4, obj.getPassword());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             try {
                 preparedStatement.close();
