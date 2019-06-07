@@ -9,13 +9,13 @@ public class PaymentDaoImpl implements Dao<Payment> {
         this.conn = conn;
     }
 
-    public Payment getById(int id) {
+    public Payment getById(String resID) {
         Payment payment = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement("SELECT * FROM Payment WHERE resID=?");
-            preparedStatement.setInt(1, id);
+            preparedStatement.setString(1, resID);
             resultSet = preparedStatement.executeQuery();
             Set<Payment> payments = unpackResultSet(resultSet);
             payment = (Payment) payments.toArray()[0];
