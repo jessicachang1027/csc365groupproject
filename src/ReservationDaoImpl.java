@@ -9,13 +9,13 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         this.conn = conn;
     }
 
-    public Reservation getById(String id) {
+    public Reservation getById(String code) {
         Reservation reservation = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE id=?");
-            preparedStatement.setString(1, id);
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE code=?");
+            preparedStatement.setString(1, code);
             resultSet = preparedStatement.executeQuery();
             Set<Reservation> reservations = unpackResultSet(resultSet);
             reservation = (Reservation) reservations.toArray()[0];
