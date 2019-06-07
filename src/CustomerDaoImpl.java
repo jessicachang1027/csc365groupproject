@@ -13,34 +13,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
         this.conn = conn;
     }
 
-    public Customer getById(int id) {
-        Customer customer = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers WHERE customerID=?");
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-            Set<Customer> customers = unpackResultSet(resultSet);
-            customer = (Customer)customers.toArray()[0];
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return customer;
-    }
-
-    public Customer getByUsername(String username) {
+    public Customer getById(String username) {
         Customer customer = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;

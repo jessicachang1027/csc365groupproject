@@ -39,7 +39,7 @@ public class CustomerCachedDaoImpl implements CachedDao<Customer> {
         return null;
     }
 
-    public Object getById(int id) {
+    public Object getById(String id) {
         return null;
     }
 

@@ -9,13 +9,13 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         this.conn = conn;
     }
 
-    public Reservation getById(int id) {
+    public Reservation getById(String id) {
         Reservation reservation = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE id=?");
-            preparedStatement.setInt(1, id);
+            preparedStatement.setString(1, id);
             resultSet = preparedStatement.executeQuery();
             Set<Reservation> reservations = unpackResultSet(resultSet);
             reservation = (Reservation) reservations.toArray()[0];
@@ -42,6 +42,31 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations");
+            resultSet = preparedStatement.executeQuery();
+            reservations = unpackResultSet(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reservations;
+    }
+
+    public Set<Reservation> getAllWhere(String query) {
+        Set<Reservation> reservations = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE " + query);
             resultSet = preparedStatement.executeQuery();
             reservations = unpackResultSet(resultSet);
         } catch (SQLException e) {
@@ -180,10 +205,22 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             //System.out.println(reservations);
 
             //Date.valueOf("2010-01-31")
+
             Reservation newReservation
-                    = new Reservation("1","RND", "23-SEP-10",
-                    "26-SEP-10", 100, "Arriola", "Alex", 1, 1);
+                    = new Reservation("3","RND", "23-SEP-10",
+                    "26-SEP-10", 100, "Alex", "Arriola", 1, 1);
             reservationDao.insert(newReservation);
+
+            newReservation
+                    = new Reservation("69","HBB", "23-SEP-11",
+                    "26-SEP-11", 150, "Alex", "Arriola", 1, 1);
+            reservationDao.insert(newReservation);
+
+            newReservation
+                    = new Reservation("69","HBB", "26-SEP-11",
+                    "29-SEP-11", 155, "Alex", "Arriola", 1, 1);
+            reservationDao.insert(newReservation);
+
 //            reservations = reservationDao.getAll();
 //            System.out.println(reservations);
 //            reservation.setPhone("8052223456");
