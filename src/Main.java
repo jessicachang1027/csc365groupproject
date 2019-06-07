@@ -36,6 +36,7 @@ public class Main {
         String lastName;
         String username;
         String password;
+        Customer customer = null;
         try {
             DaoManager dm = DaoManager.getInstance();
             Dao<Customer> customerDao = dm.getCustomerDao();
@@ -52,8 +53,8 @@ public class Main {
                         username = in.next();
                         System.out.println("Enter password: ");
                         password = in.next();
-                        Customer newCustomer = new Customer(firstName, lastName, username, password);
-                        success = customerDao.insert(newCustomer);
+                        customer = new Customer(firstName, lastName, username, password);
+                        success = customerDao.insert(customer);
                         if (!success) {
                             System.out.println("Username has already been taken. Please try again!");
                             break;
@@ -66,7 +67,7 @@ public class Main {
                         username = in.next();
                         System.out.println("Enter password: ");
                         password = in.next();
-                        Customer customer = ((CustomerDaoImpl)customerDao).login(username, password);
+                        customer = ((CustomerDaoImpl)customerDao).login(username, password);
                         if (customer == null) {
                             System.out.println("User not found/Incorrect password. Try again");
                             success = false;
