@@ -19,7 +19,7 @@ public class Main {
         System.out.println("    View Reservations (v)");
         System.out.print("Enter option from list: ");
     }
-/*/
+
     public static void main(String args[]) {
         printHomeMenu();
 
@@ -70,7 +70,7 @@ public class Main {
         }
 
     }
-*/
+
     private static void showAvailability(Scanner in) {
         System.out.println("How do you want to search?");
         System.out.println("    By Day (d)?");

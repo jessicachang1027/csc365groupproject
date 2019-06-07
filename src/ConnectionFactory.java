@@ -25,4 +25,10 @@ public class ConnectionFactory {
         }
         return null;
     }
+    public static void main(String[] args){
+        Connection conn = getConnection("com.mysql.cj.jdbc.Driver",
+                "jdbc:mysql://csc365.toshikuboi.net:3306/sec05group06",
+                "sec05group06", "group06@sec05");
+    }
+
 }
