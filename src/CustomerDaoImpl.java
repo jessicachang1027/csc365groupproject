@@ -13,34 +13,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
         this.conn = conn;
     }
 
-    public Customer getById(int id) {
-        Customer customer = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers WHERE customerID=?");
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-            Set<Customer> customers = unpackResultSet(resultSet);
-            customer = (Customer)customers.toArray()[0];
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return customer;
-    }
-
-    public Customer getByUsername(String username) {
+    public Customer getById(String username) {
         Customer customer = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -107,8 +80,6 @@ public class CustomerDaoImpl implements Dao<Customer> {
             preparedStatement.setString(3, obj.getUsername());
             preparedStatement.setString(4, obj.getPassword());
             successful = preparedStatement.execute();
-            System.out.println("got here");
-
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -127,12 +98,11 @@ public class CustomerDaoImpl implements Dao<Customer> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "UPDATE Customer SET firstName=?, lastName=?, username=?, password=? WHERE customerID=?");
+                    "UPDATE Customer SET firstName=?, lastName=?, password=? WHERE username=?");
             preparedStatement.setString(1, obj.getFirstName());
             preparedStatement.setString(2, obj.getLastName());
-            preparedStatement.setString(3, obj.getUsername());
             preparedStatement.setString(4, obj.getPassword());
-            preparedStatement.setString(5, obj.getCustomerId());
+            preparedStatement.setString(3, obj.getUsername());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -152,8 +122,8 @@ public class CustomerDaoImpl implements Dao<Customer> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "DELETE FROM Customer WHERE customerID=?");
-            preparedStatement.setString(1, obj.getCustomerId());
+                    "DELETE FROM Customer WHERE username=?");
+            preparedStatement.setString(1, obj.getUsername());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
