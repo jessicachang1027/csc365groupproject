@@ -44,21 +44,19 @@ public class Main {
                     username = in.next();
                     System.out.println("Enter password: ");
                     password = in.next();
-                    Customer newCustomer = new Customer("69", firstName, lastName, username, password);
+                    Customer newCustomer = new Customer(firstName, lastName, username, password);
                     customerDao.insert(newCustomer);
                     System.out.println("Welcome " + firstName + "!");
                     dm.close();
                     break;
                 case "l":
-                    //TODO: add sql statements to get customer from database
                     System.out.println("Enter username: ");
                     username = in.next();
                     System.out.println("Enter password: ");
                     password = in.next();
-                    System.out.println("Hello " + username);
-                    Customer customer = customerDao.getById(69);
-                    System.out.println(customer);
-                    System.out.println("Welcome back " + customer.getName() + "!");
+                    Customer customer = ((CustomerDaoImpl)customerDao).getByUsername(username);
+                    if (customer == null) System.out.println("User not found. Try again");
+                    else System.out.println("Welcome back " + customer.getFirstName() + "!");
                     break;
             }
 

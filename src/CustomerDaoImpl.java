@@ -40,6 +40,33 @@ public class CustomerDaoImpl implements Dao<Customer> {
         return customer;
     }
 
+    public Customer getByUsername(String username) {
+        Customer customer = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers WHERE username=?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            Set<Customer> customers = unpackResultSet(resultSet);
+            customer = (Customer)customers.toArray()[0];
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return customer;
+    }
+
     public Set<Customer> getAll() {
         Set<Customer> customers = null;
         PreparedStatement preparedStatement = null;
