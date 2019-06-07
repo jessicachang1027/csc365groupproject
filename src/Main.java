@@ -1,4 +1,6 @@
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Scanner;
 
@@ -29,44 +31,55 @@ public class Main {
         String lastName;
         String username;
         String password;
-        switch (choice) {
-            case "s":
-                //TODO: add sql statements to add customer to database
-                System.out.println("Enter First Name: ");
-                firstName = in.next();
-                System.out.println("Enter Last Name: ");
-                lastName = in.next();
-                System.out.println("Enter username: ");
-                username = in.next();
-                System.out.println("Enter password: ");
-                password = in.next();
-                Customer user = new Customer("1", firstName, lastName, username, password);
-                break;
-            case "l":
-                //TODO: add sql statements to get customer from database
-                System.out.println("Enter username: ");
-                username = in.next();
-                System.out.println("Enter password: ");
-                password = in.next();
-                System.out.println("Hello " + username);
-                break;
-        }
+        try {
+            DaoManager dm = DaoManager.getInstance();
+            Dao<Customer> customerDao = dm.getCustomerDao();
+            switch (choice) {
+                case "s":
+                    System.out.println("Enter First Name: ");
+                    firstName = in.next();
+                    System.out.println("Enter Last Name: ");
+                    lastName = in.next();
+                    System.out.println("Enter username: ");
+                    username = in.next();
+                    System.out.println("Enter password: ");
+                    password = in.next();
+                    Customer newCustomer = new Customer("69", firstName, lastName, username, password);
+                    customerDao.insert(newCustomer);
+                    System.out.println("Welcome " + firstName + "!");
+                    dm.close();
+                    break;
+                case "l":
+                    //TODO: add sql statements to get customer from database
+                    System.out.println("Enter username: ");
+                    username = in.next();
+                    System.out.println("Enter password: ");
+                    password = in.next();
+                    System.out.println("Hello " + username);
+                    Customer customer = customerDao.getById(69);
+                    System.out.println(customer);
+                    System.out.println("Welcome back " + customer.getName() + "!");
+                    break;
+            }
 
-        printUserMenu();
-        choice = in.next();
-        switch (choice) {
-            case "a":
-                showAvailability(in);
-                break;
-            case "c":
-                changeReservation(in);
-                break;
-            case "v":
-                showReservations(in);
-                break;
-            default:
-                System.out.println("Invalid choice. Try again");
-                break;
+            printUserMenu();
+            choice = in.next();
+            switch (choice) {
+                case "a":
+                    showAvailability(in);
+                    break;
+                case "c":
+                    changeReservation(in);
+                    break;
+                case "v":
+                    showReservations(in);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again");
+                    break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
     }
