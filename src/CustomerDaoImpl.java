@@ -18,7 +18,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customer WHERE id=?");
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers WHERE customerID=?");
             preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
             Set<Customer> customers = unpackResultSet(resultSet);
@@ -45,7 +45,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customer");
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Customers");
             resultSet = preparedStatement.executeQuery();
             customers = unpackResultSet(resultSet);
         } catch (SQLException e) {
@@ -72,13 +72,13 @@ public class CustomerDaoImpl implements Dao<Customer> {
 
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "INSERT INTO Customers (customerID,firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)");
+                    "INSERT INTO Customers (firstName, lastName, username, password) VALUES (?, ?, ?, ?)");
 
-            preparedStatement.setString(1, obj.getCustomerId());
-            preparedStatement.setString(2, obj.getSsn());
-            preparedStatement.setString(3, obj.getName());
-            preparedStatement.setString(4, obj.getAddress());
-            preparedStatement.setString(5, obj.getPhone());
+            //preparedStatement.setString(1, obj.getCustomerId());
+            preparedStatement.setString(1, obj.getFirstName());
+            preparedStatement.setString(2, obj.getLastName());
+            preparedStatement.setString(3, obj.getUsername());
+            preparedStatement.setString(4, obj.getPassword());
             successful = preparedStatement.execute();
             System.out.println("got here");
 
@@ -100,11 +100,11 @@ public class CustomerDaoImpl implements Dao<Customer> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "UPDATE Customer SET ssn=?, name=?, address=?, phone=? WHERE id=?");
-            preparedStatement.setString(1, obj.getSsn());
-            preparedStatement.setString(2, obj.getName());
-            preparedStatement.setString(3, obj.getAddress());
-            preparedStatement.setString(4, obj.getPhone());
+                    "UPDATE Customer SET firstName=?, lastName=?, username=?, password=? WHERE customerID=?");
+            preparedStatement.setString(1, obj.getFirstName());
+            preparedStatement.setString(2, obj.getLastName());
+            preparedStatement.setString(3, obj.getUsername());
+            preparedStatement.setString(4, obj.getPassword());
             preparedStatement.setString(5, obj.getCustomerId());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
@@ -125,7 +125,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "DELETE FROM Customer WHERE id=?");
+                    "DELETE FROM Customer WHERE customerID=?");
             preparedStatement.setString(1, obj.getCustomerId());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
@@ -145,11 +145,10 @@ public class CustomerDaoImpl implements Dao<Customer> {
 
         while(rs.next()) {
             Customer customer = new Customer(
-                    rs.getString("id"),
-                    rs.getString("ssn"),
-                    rs.getString("name"),
-                    rs.getString("address"),
-                    rs.getString("phone"));
+                    rs.getString("firstName"),
+                    rs.getString("lastName"),
+                    rs.getString("username"),
+                    rs.getString("password"));
 
 
             customers.add(customer);
@@ -158,18 +157,18 @@ public class CustomerDaoImpl implements Dao<Customer> {
     }
 
     public static void main(String[] args) {
-        try {
+//        try {
             //Connection conn = ConnectionFactory.getConnection();
             //CustomerDaoImpl customerDao = new CustomerDaoImpl(conn);
-            DaoManager dm = DaoManager.getInstance();
-            Dao<Customer> customerDao = dm.getCustomerDao();
-            //Customer customer = customerDao.getById(1);
-            //System.out.println(customer);
-            //Set<Customer> customers = customerDao.getAll();
-            //System.out.println(customers);
-            Customer newCustomer
-                    = new Customer("1","123456789", "Mary", "There", "8051112222");
-            customerDao.insert(newCustomer);
+//            DaoManager dm = DaoManager.getInstance();
+//            Dao<Customer> customerDao = dm.getCustomerDao();
+//            Customer customer = customerDao.getById(2);
+//            System.out.println(customer.getFirstName());
+//            Set<Customer> customers = customerDao.getAll();
+//            System.out.println(customers);
+//            Customer newCustomer
+//                    = new Customer("Jessica", "Chang", "jessicachang38", "password1027");
+            //customerDao.insert(newCustomer);
 //            customers = customerDao.getAll();
 //            System.out.println(customers);
 //            customer.setPhone("8052223456");
@@ -185,9 +184,9 @@ public class CustomerDaoImpl implements Dao<Customer> {
 //            }
 //            customers = customerDao.getAll();
 //            System.out.println(customers);
-            dm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//            dm.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 }
