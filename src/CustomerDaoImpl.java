@@ -159,15 +159,12 @@ public class CustomerDaoImpl implements Dao<Customer> {
             //CustomerDaoImpl customerDao = new CustomerDaoImpl(conn);
             DaoManager dm = DaoManager.getInstance();
             Dao<Customer> customerDao = dm.getCustomerDao();
-            Customer customer = customerDao.getById(1);
-            System.out.println(customer);
-            Set<Customer> customers = customerDao.getAll();
-            System.out.println(customers);
+            //Customer customer = customerDao.getById(1);
+            //System.out.println(customer);
+            //Set<Customer> customers = customerDao.getAll();
+            //System.out.println(customers);
             Customer newCustomer
-                    = new Customer();
-                            /*"123456789", "Mary", "There", "8051112222");
-
-                             */
+                    = new Customer("123456789", "Mary", "There", "8051112222");
             customerDao.insert(newCustomer);
             customers = customerDao.getAll();
             System.out.println(customers);

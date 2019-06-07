@@ -8,8 +8,11 @@ public class Customer {
     private String address;
     private String phone;
 
-    public Customer(){
-
+    public Customer(String ssn, String name, String address, String phone){
+        this.phone = phone;
+        this.name = name;
+        this.ssn = ssn;
+        this.address = address;
     }
 
     public Customer(String customerId, String name, String username, String password, String ssn, String address, String phone) {
