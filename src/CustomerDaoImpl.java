@@ -69,14 +69,19 @@ public class CustomerDaoImpl implements Dao<Customer> {
         Boolean successful = false;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "INSERT INTO Customer (ssn, name, address, phone) VALUES (?, ?, ?, ?)");
-            preparedStatement.setString(1, obj.getSsn());
-            preparedStatement.setString(2, obj.getName());
-            preparedStatement.setString(3, obj.getAddress());
-            preparedStatement.setString(4, obj.getPhone());
+                    "INSERT INTO Customers (customerID,firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)");
+
+            preparedStatement.setString(1, obj.getCustomerId());
+            preparedStatement.setString(2, obj.getSsn());
+            preparedStatement.setString(3, obj.getName());
+            preparedStatement.setString(4, obj.getAddress());
+            preparedStatement.setString(5, obj.getPhone());
             successful = preparedStatement.execute();
+            System.out.println("got here");
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -139,15 +144,14 @@ public class CustomerDaoImpl implements Dao<Customer> {
         Set<Customer> customers = new HashSet<Customer>();
 
         while(rs.next()) {
-            Customer customer = new Customer();
-                    /*
+            Customer customer = new Customer(
                     rs.getString("id"),
                     rs.getString("ssn"),
                     rs.getString("name"),
                     rs.getString("address"),
                     rs.getString("phone"));
 
-                     */
+
             customers.add(customer);
         }
         return customers;
@@ -164,23 +168,23 @@ public class CustomerDaoImpl implements Dao<Customer> {
             //Set<Customer> customers = customerDao.getAll();
             //System.out.println(customers);
             Customer newCustomer
-                    = new Customer("123456789", "Mary", "There", "8051112222");
+                    = new Customer("1","123456789", "Mary", "There", "8051112222");
             customerDao.insert(newCustomer);
-            customers = customerDao.getAll();
-            System.out.println(customers);
-            customer.setPhone("8052223456");
-            customerDao.update(customer);
-            customers = customerDao.getAll();
-            System.out.println(customers);
-            Iterator<Customer> customerIterator = customers.iterator();
-            while (customerIterator.hasNext()) {
-                Customer delCustomer = customerIterator.next();
-                if (delCustomer.getName().equals("Tom")) {
-                    customerDao.delete(delCustomer);
-                }
-            }
-            customers = customerDao.getAll();
-            System.out.println(customers);
+//            customers = customerDao.getAll();
+//            System.out.println(customers);
+//            customer.setPhone("8052223456");
+//            customerDao.update(customer);
+//            customers = customerDao.getAll();
+//            System.out.println(customers);
+//            Iterator<Customer> customerIterator = customers.iterator();
+//            while (customerIterator.hasNext()) {
+//                Customer delCustomer = customerIterator.next();
+//                if (delCustomer.getName().equals("Tom")) {
+//                    customerDao.delete(delCustomer);
+//                }
+//            }
+//            customers = customerDao.getAll();
+//            System.out.println(customers);
             dm.close();
         } catch (SQLException e) {
             e.printStackTrace();

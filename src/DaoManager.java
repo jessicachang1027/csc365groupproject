@@ -46,7 +46,7 @@ public class DaoManager {
     private DaoManager() throws Exception {
         try
         {
-            //this.conn = ConnectionFactory.getConnection(this.driver, this.url, this.user, this.pass);
+            this.conn = ConnectionFactory.getConnection(this.driver, this.url, this.user, this.pass);
         }
         catch(Exception e) { throw e; }
     }
