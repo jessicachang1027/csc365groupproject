@@ -23,6 +23,7 @@ public class Main {
         System.out.println("    Search Room Availability (a)");
         System.out.println("    Change/Cancel Reservation (c)");
         System.out.println("    View Reservations (v)");
+        System.out.println("    Quit (q)");
         System.out.print("Enter option from list: ");
     }
 
@@ -90,6 +91,9 @@ public class Main {
                 case "v":
                     showReservations(in);
                     break;
+                case "q":
+                    System.out.println("Thank you, bye!");
+                    System.exit(0);
                 default:
                     System.out.println("Invalid choice. Try again");
                     break;
