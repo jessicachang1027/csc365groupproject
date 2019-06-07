@@ -107,6 +107,10 @@ public class DaoManager {
         return new ReservationDaoImpl(this.conn);
     }
 
+    public Dao<Payment> getPaymentDao() {
+        return new PaymentDaoImpl(this.conn);
+    }
+
     public CachedDao<Customer> getCustomerCachedDao() {
         return new CustomerCachedDaoImpl(this.conn);
     }

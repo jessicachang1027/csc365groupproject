@@ -40,7 +40,7 @@ public class Main {
                 username = in.next();
                 System.out.println("Enter password: ");
                 password = in.next();
-                Customer user = new Customer("1", firstName, lastName, username, password);
+                //Customer user = new Customer("1", firstName, lastName, username, password);
                 break;
             case "l":
                 //TODO: add sql statements to get customer from database
