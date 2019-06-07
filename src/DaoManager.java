@@ -6,10 +6,10 @@ import java.util.Properties;
 
 public class DaoManager {
 
-    private String driver = null;
-    private String url = null;
-    private String user = null;
-    private String pass = null;
+    private String driver = "com.mysql.cj.jdbc.Driver";
+    private String url = "jdbc:mysql://csc365.toshikuboi.net:3306/sec05group06";
+    private String user = "sec05group06";
+    private String pass = "group06@sec05";
 
     private static class DAOManagerHolder {
         public static final ThreadLocal<DaoManager> instance;

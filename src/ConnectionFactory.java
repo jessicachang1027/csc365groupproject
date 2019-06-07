@@ -11,11 +11,6 @@ public class ConnectionFactory {
      * @return Connection object
      */
 
-    public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    public static final String URL = "jdbc:mysql://csc365.toshikuboi.net:3306/sec05group06";
-    public static final String USER = "sec05group06";
-    public static final String PASS = "group06@sec05";
-
     public static Connection getConnection(String driver, String url, String user, String pass)
     {
         try {
@@ -29,9 +24,5 @@ public class ConnectionFactory {
             ex.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String[] args){
-        Connection connection = ConnectionFactory.getConnection(DRIVER, URL, USER, PASS);
     }
 }
