@@ -153,6 +153,22 @@ public class Main {
 
     }
 
+    private static String getValidDate(Scanner in) {
+        Boolean validDate = false;
+        String sDate = in.next();
+        java.util.Date javaDate;
+        while(!validDate) {
+            try {
+                javaDate = new SimpleDateFormat("dd-MMM-yy").parse(sDate);
+                validDate = true;
+            } catch (ParseException e) {
+                System.out.println("Invalid date format try again: ");
+                sDate = in.next();
+            }
+        }
+        return sDate;
+    }
+
     private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao) {
         System.out.println("How do you want to search?");
         System.out.println("    By Day (d)?");
@@ -161,21 +177,7 @@ public class Main {
         String choice = in.next();
         if (choice.equals("d")) {
             System.out.println("Enter date (dd-mmm-yy) : ");
-            String sDate = in.next();
-            Boolean validDate = false;
-            java.util.Date javaDate;
-            java.sql.Date sqlDate = new Date(1000);
-
-            while(!validDate) {
-                try {
-                    javaDate = new SimpleDateFormat("dd-MMM-yy").parse(sDate);
-                    sqlDate = new java.sql.Date(javaDate.getTime());
-                    validDate = true;
-                } catch (ParseException e) {
-                    System.out.println("Invalid date format try again: ");
-                    sDate = in.next();
-                }
-            }
+            String sDate = getValidDate(in);
             //TODO: get availability from database and print all rooms available
             String roomsReservedQuery = "RoomId not in (SELECT code from Reservations WHERE toDate('"
                     + sDate
@@ -184,17 +186,33 @@ public class Main {
             for(Room room : openRooms) {
                 System.out.println(room.getRoomName());
             }
+            System.out.println();
 
         }
         else if (choice.equals("s")) {
             System.out.print("Enter check in date: ");
+            String checkIn = getValidDate(in);
             System.out.print("Enter check out date: ");
-            System.out.print("Enter desired room type: ");
+            String checkOut = getValidDate(in);
+            System.out.print("Enter desired bed type: ");
+            String bedType = in.next();
             System.out.print("Enter desired decor: ");
-            System.out.print("Enter price range (low, high): ");
-            System.out.print("Enter number of rooms: ");
+            String decor = in.next();
+            System.out.print("Enter price range (low high): ");
+            double low = in.nextDouble();
+            double high = in.nextDouble();
+            System.out.print("Enter number of beds: ");
+            int numBeds = in.nextInt();
             System.out.print("Enter number of occupants: ");
-            //TODO: find rooms from database using specifications and print all available rooms
+            int numOccupants = in.nextInt();
+            Set<Room> specificRooms = ((RoomDaoImpl)roomDao).getMatchingRooms(checkIn,
+                    checkOut, bedType, decor, low, high,
+                    numBeds, numOccupants);
+
+            for(Room room : specificRooms) {
+                System.out.println(room.getRoomName());
+            }
+            System.out.println();
         }
         else {
             System.out.println("Invalid choice. Try again");
