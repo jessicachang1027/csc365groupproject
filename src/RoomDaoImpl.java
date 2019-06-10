@@ -86,6 +86,52 @@ public class RoomDaoImpl implements Dao<Room> {
         return rooms;
     }
 
+    public Set<Room> getMatchingRooms(
+            String checkIn, String checkOut, String bedType, String decor,
+            double low, double high, int numBeds, int numOccupants) {
+        Set<Room> rooms = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms " +
+                            "WHERE RoomId NOT IN" +
+                            "      (SELECT RoomId FROM Reservations, Rooms " +
+                            "        WHERE RoomId = room " +
+                            "        AND (toDate(?) BETWEEN toDate(checkin) AND toDate(checkout) " +
+                            "          OR toDate(?) BETWEEN toDate(checkin) AND toDate(checkout)) " +
+                            "        GROUP BY RoomId)" +
+                            "AND bedType = ? " +
+                            "AND decor = ? " +
+                            "AND basePrice BETWEEN ? AND ? " +
+                            "AND beds = ? " +
+                            "AND maxOccupancy > ?");
+            preparedStatement.setString(1, checkIn);
+            preparedStatement.setString(2, checkOut);
+            preparedStatement.setString(3, bedType);
+            preparedStatement.setString(4, decor);
+            preparedStatement.setDouble(5, low);
+            preparedStatement.setDouble(6, high);
+            preparedStatement.setInt(7, numBeds);
+            preparedStatement.setInt(8, numOccupants);
+            resultSet = preparedStatement.executeQuery();
+            rooms = unpackResultSet(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return rooms;
+    }
+
     public Boolean insert(Room obj) {
         Boolean successful = false;
         PreparedStatement preparedStatement = null;
