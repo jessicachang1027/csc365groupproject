@@ -2,6 +2,8 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -62,6 +64,7 @@ public class Main {
                         user = username;
                         System.out.println("Welcome " + firstName + "!");
                         dm.close();
+                        break;
                     case "l":
                         System.out.println("Enter username: ");
                         username = in.next();
@@ -76,9 +79,11 @@ public class Main {
                         user = username;
                         success = true;
                         System.out.println("Welcome back " + customer.getFirstName() + "!");
+                        break;
                     case "q":
                         System.out.println("Thank you, bye!");
                         System.exit(0);
+                        break;
                 }
             }
 
