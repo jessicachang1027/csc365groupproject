@@ -192,12 +192,10 @@ public class Main {
                 }
                 else{
                     System.out.println("    Available? No.");
-                    // only return one reservation
-                    //Set<Reservation> reservations = ((ReservationDaoImpl)resDao).getNextAvailable(sDate, room.getRoomId());
-                    //for(Reservation res: reservations){
-                        //System.out.println("    Next Date Available: " + res.getCheckOut());
-                        //int length = ((ReservationDaoImpl)resDao).getNextAvailableLength();
-                    }
+                    String nextDate = ((ReservationDaoImpl)resDao).getNextAvailableDate(sDate, room.getRoomId());
+                    System.out.println("    Next Date Available: " + nextDate);
+                    int length = ((ReservationDaoImpl)resDao).getNextAvailableLength(sDate, room.getRoomId());
+                    System.out.println("    Next Available Length of Stay: " + length + " days");
                 }
                 System.out.println();
             }

@@ -87,26 +87,48 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservations;
     }
 
-    public Set<Reservation> getNextAvailable(String date, String room){
-        Set<Reservation> reservations = null;
+    public String getNextAvailableDate(String date, String room){
+        String nextDate = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM " +
-                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+            preparedStatement = this.conn.prepareStatement("SELECT X.checkout FROM " +
+                    "(SELECT x.checkout, DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
+                    "join (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
                     "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
                     "AND room = ?) AS X " +
-                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
                     "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?)");
+                    "AND room = ?)) as x " +
+                    "on R.room = x.room " +
+                    "WHERE STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
+                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y')) AS X " +
+                    "WHERE X.duration <= ALL " +
+                    "(SELECT DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
+                    "JOIN (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?) AS X " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)) as x " +
+                    "on R.room = x.room " +
+                    "where STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
+                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y'))");
             preparedStatement.setString(1, date);
             preparedStatement.setString(2, date);
             preparedStatement.setString(3, room);
             preparedStatement.setString(4, date);
             preparedStatement.setString(5, date);
             preparedStatement.setString(6, room);
+            preparedStatement.setString(7, date);
+            preparedStatement.setString(8, date);
+            preparedStatement.setString(9, room);
+            preparedStatement.setString(10, date);
+            preparedStatement.setString(11, date);
+            preparedStatement.setString(12, room);
             resultSet = preparedStatement.executeQuery();
-            reservations = unpackResultSet(resultSet);
+            resultSet.next();
+            nextDate = resultSet.getString("checkout");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -121,7 +143,66 @@ public class ReservationDaoImpl implements Dao<Reservation> {
                 e.printStackTrace();
             }
         }
-        return reservations;
+        return nextDate;
+    }
+
+    public int getNextAvailableLength(String date, String room){
+        int length = 0;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT X.duration FROM " +
+                    "(SELECT x.checkout, DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
+                    "join (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?) AS X " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)) as x " +
+                    "on R.room = x.room " +
+                    "WHERE STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
+                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y')) AS X " +
+                    "WHERE X.duration <= ALL " +
+                    "(SELECT DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
+                    "JOIN (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?) AS X " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)) as x " +
+                    "on R.room = x.room " +
+                    "where STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
+                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y'))");
+            preparedStatement.setString(1, date);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, room);
+            preparedStatement.setString(4, date);
+            preparedStatement.setString(5, date);
+            preparedStatement.setString(6, room);
+            preparedStatement.setString(7, date);
+            preparedStatement.setString(8, date);
+            preparedStatement.setString(9, room);
+            preparedStatement.setString(10, date);
+            preparedStatement.setString(11, date);
+            preparedStatement.setString(12, room);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            length = resultSet.getInt("duration");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return length;
     }
 
     public Boolean insert(Reservation obj) {
