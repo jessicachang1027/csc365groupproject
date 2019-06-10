@@ -193,6 +193,11 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservations;
     }
 
+    public void printRevenue(int year)
+    {
+
+    }
+
     public static void main(String[] args) {
         try {
             //Connection conn = ConnectionFactory.getConnection();
