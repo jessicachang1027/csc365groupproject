@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Room {
     private String roomId;
     private String roomName;
@@ -75,11 +77,31 @@ public class Room {
     }
 
     public void displayRoom() {
-        System.out.println("Room Name: " + roomName);
-        System.out.println("Type of bed: " + bedType);
-        System.out.println("Number of beds: " + beds);
-        System.out.println("Max occupants allowed: " + maxOcc);
-        System.out.println("Decor: " + decor);
-        System.out.println("Base Price: " + price);
+        System.out.println("Room Code: " + roomId);
+        System.out.println("    Room Name: " + roomName);
+        System.out.println("    Type of bed: " + bedType);
+        System.out.println("    Number of beds: " + beds);
+        System.out.println("    Max occupants allowed: " + maxOcc);
+        System.out.println("    Decor: " + decor);
+        System.out.println("    Base Price: " + price);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Room)) return false;
+        Room room = (Room) o;
+        return getBeds() == room.getBeds() &&
+                getMaxOcc() == room.getMaxOcc() &&
+                Double.compare(room.getPrice(), getPrice()) == 0 &&
+                getRoomId().equals(room.getRoomId()) &&
+                Objects.equals(getRoomName(), room.getRoomName()) &&
+                Objects.equals(getBedType(), room.getBedType()) &&
+                Objects.equals(getDecor(), room.getDecor());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRoomId(), getRoomName(), getBedType(), getBeds(), getMaxOcc(), getDecor(), getPrice());
     }
 }

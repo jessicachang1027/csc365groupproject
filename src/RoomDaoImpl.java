@@ -61,12 +61,17 @@ public class RoomDaoImpl implements Dao<Room> {
         return rooms;
     }
 
-    public Set<Room> getAllWhere(String query) {
+    public Set<Room> getAllWhere(String date) {
         Set<Room> rooms = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms WHERE " + query);
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms WHERE RoomId not in " +
+                    "(SELECT room from Reservations " +
+                    "WHERE STR_TO_DATE(?, '%d-%b-%y') "+
+                    "BETWEEN STR_TO_DATE(checkIn, '%d-%b-%y') and STR_TO_DATE(checkout, '%d-%b-%y') "+
+                    "order by room)");
+            preparedStatement.setString(1, date);
             resultSet = preparedStatement.executeQuery();
             rooms = unpackResultSet(resultSet);
         } catch (SQLException e) {
@@ -130,6 +135,39 @@ public class RoomDaoImpl implements Dao<Room> {
             }
         }
         return rooms;
+    }
+
+    public double getPopularity(String date, String room){
+        double score = 0.0;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement(
+                    "SELECT ROUND(SUM(DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y\'), STR_TO_DATE(checkin, '%d-%b-%y')))/180, 2) as score from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') " +
+                    "BETWEEN DATE_SUB(STR_TO_DATE(?, '%d-%b-%y'), INTERVAL 180 DAY) AND STR_TO_DATE(?, '%d-%b-%y\') " +
+                            "AND room = ?" );
+            preparedStatement.setString(1, date);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, room);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            score = resultSet.getDouble("score");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return score;
     }
 
     public Boolean insert(Room obj) {
