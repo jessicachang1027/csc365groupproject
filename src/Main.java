@@ -67,9 +67,9 @@ public class Main {
                         break;
                     case "l":
                         System.out.println("Enter username: ");
-                        username = in.next();
+                        username = "kkrein";
                         System.out.println("Enter password: ");
-                        password = in.next();
+                        password = "supbruh";
                         customer = ((CustomerDaoImpl)customerDao).login(username, password);
                         if (customer == null) {
                             System.out.println("User not found/Incorrect password. Try again");
@@ -87,25 +87,28 @@ public class Main {
                 }
             }
 
-            printUserMenu();
-            choice = in.next();
-            Dao<Reservation> resDao = dm.getReservationDao();
-            switch (choice) {
-                case "a":
-                    showAvailability(in, resDao);
-                    break;
-                case "c":
-                    changeReservation(in, resDao);
-                    break;
-                case "v":
-                    showReservations(in, resDao, customer);
-                    break;
-                case "q":
-                    System.out.println("Thank you, bye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice. Try again");
-                    break;
+            while(true) {
+                printUserMenu();
+                choice = in.next();
+                Dao<Reservation> resDao = dm.getReservationDao();
+                Dao<Room> roomDao = dm.getRoomDao();
+                switch (choice) {
+                    case "a":
+                        showAvailability(in, resDao, roomDao);
+                        break;
+                    case "c":
+                        changeReservation(in, resDao);
+                        break;
+                    case "v":
+                        showReservations(in, resDao, customer);
+                        break;
+                    case "q":
+                        System.out.println("Thank you, bye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid choice. Try again");
+                        break;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -113,16 +116,38 @@ public class Main {
 
     }
 
-    private static void showAvailability(Scanner in, Dao<Reservation> resDao) {
+    private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao) {
         System.out.println("How do you want to search?");
         System.out.println("    By Day (d)?");
         System.out.println("    By Specifications (s)?");
         System.out.print("Enter choice: ");
         String choice = in.next();
         if (choice.equals("d")) {
-            System.out.println("Enter date : ");
-            Date day = new Date(in.nextLong());
+            System.out.println("Enter date (dd-mmm-yy) : ");
+            String sDate = in.next();
+            Boolean validDate = false;
+            java.util.Date javaDate;
+            java.sql.Date sqlDate = new Date(1000);
+
+            while(!validDate) {
+                try {
+                    javaDate = new SimpleDateFormat("dd-MMM-yy").parse(sDate);
+                    sqlDate = new java.sql.Date(javaDate.getTime());
+                    validDate = true;
+                } catch (ParseException e) {
+                    System.out.println("Invalid date format try again: ");
+                    sDate = in.next();
+                }
+            }
             //TODO: get availability from database and print all rooms available
+            String roomsReservedQuery = "RoomId not in (SELECT code from Reservations WHERE toDate('"
+                    + sDate
+                    + "') BETWEEN toDate(CheckIn) and toDate(Checkout) group by Room)";
+            Set<Room> openRooms = ((RoomDaoImpl)roomDao).getAllWhere(roomsReservedQuery);
+            for(Room room : openRooms) {
+                System.out.println(room.getRoomName());
+            }
+
         }
         else if (choice.equals("s")) {
             System.out.print("Enter check in date: ");
