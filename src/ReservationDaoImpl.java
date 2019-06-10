@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.lang.*;
 
 public class ReservationDaoImpl implements Dao<Reservation> {
     private Connection conn;
@@ -195,7 +196,55 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
     public void printRevenue(int year)
     {
-
+        String sqlStatement = " (SELECT RoomName, JanRev, FebRev, MarRev, AprRev, MayRev, JunRev, \n" +
+                "\t\tJulRev, AugRev, SepRev, OctRev, NovRev, DecRev,\n" +
+                "        RoomName + JanRev + FebRev + MarRev + AprRev + MayRev + JunRev + \n" +
+                "\t\tJulRev + AugRev + SepRev + OctRev + NovRev + DecRev as TotalRev\n" +
+                " FROM\n" +
+                "\t(SELECT RoomName, getMonthRev(1, RoomId, inYear) as JanRev, getMonthRev(2, RoomId, inYear) as FebRev,\n" +
+                "\t\t\tgetMonthRev(3, RoomId, inYear) as MarRev, getMonthRev(4, RoomId, inYear) as AprRev,\n" +
+                "\t\t\tgetMonthRev(5, RoomId, inYear) as MayRev, getMonthRev(6, RoomId, inYear) as JunRev,\n" +
+                "\t\t\tgetMonthRev(7, RoomId, inYear) as JulRev, getMonthRev(8, RoomId, inYear) as AugRev,\n" +
+                "\t\t\tgetMonthRev(9, RoomId, inYear) as SepRev, getMonthRev(10, RoomId, inYear) as OctRev,\n" +
+                "\t\t\tgetMonthRev(11, RoomId, inYear) as NovRev, getMonthRev(12, RoomId, inYear) as DecRev\n" +
+                "\tFROM Rooms\n" +
+                "    UNION SELECT 'Total:', getTotalRev(1, inYear) as JanRev, getTotalRev(2, inYear) as FebRev,\n" +
+                "\t\t\tgetTotalRev(3, inYear) as MarRev, getTotalRev(4, inYear) as AprRev,\n" +
+                "\t\t\tgetTotalRev(5, inYear) as MayRev, getTotalRev(6, inYear) as JunRev,\n" +
+                "\t\t\tgetTotalRev(7, inYear) as JulRev, getTotalRev(8, inYear) as AugRev,\n" +
+                "\t\t\tgetTotalRev(9, inYear) as SepRev, getTotalRev(10, inYear) as OctRev,\n" +
+                "\t\t\tgetTotalRev(11, inYear) as NovRev, getTotalRev(12, inYear) as DecRev) as revs)";
+        sqlStatement = sqlStatement.replace("inYear", Integer.toString(year));
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement(sqlStatement);
+            resultSet = preparedStatement.executeQuery();
+            System.out.println(String.format("%-25s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s",
+                    "Room", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total"));
+            while(resultSet.next())
+            {
+                System.out.print(String.format("%-25s ", resultSet.getNString(1)));
+                for(int i = 2; i <= 14; i++)
+                {
+                    System.out.print(String.format("%-10s ", resultSet.getInt(i)));
+                }
+                System.out.println();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String[] args) {
