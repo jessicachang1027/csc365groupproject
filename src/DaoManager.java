@@ -111,6 +111,10 @@ public class DaoManager {
         return new PaymentDaoImpl(this.conn);
     }
 
+    public Dao<Room> getRoomDao() {
+        return new RoomDaoImpl(this.conn);
+    }
+
     public CachedDao<Customer> getCustomerCachedDao() {
         return new CustomerCachedDaoImpl(this.conn);
     }
