@@ -87,6 +87,43 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservations;
     }
 
+    public Set<Reservation> getNextAvailable(String date, String room){
+        Set<Reservation> reservations = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM " +
+                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?) AS X " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)");
+            preparedStatement.setString(1, date);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, room);
+            preparedStatement.setString(4, date);
+            preparedStatement.setString(5, date);
+            preparedStatement.setString(6, room);
+            resultSet = preparedStatement.executeQuery();
+            reservations = unpackResultSet(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reservations;
+    }
+
     public Boolean insert(Reservation obj) {
         Boolean successful = false;
         PreparedStatement preparedStatement = null;

@@ -179,13 +179,27 @@ public class Main {
         if (choice.equals("d")) {
             System.out.println("Enter date (dd-mmm-yy) : ");
             String sDate = getValidDate(in);
-            //TODO: get availability from database and print all rooms available
-            String roomsReservedQuery = "RoomId not in (SELECT code from Reservations WHERE toDate('"
-                    + sDate
-                    + "') BETWEEN toDate(CheckIn) and toDate(Checkout) group by Room)";
-            Set<Room> openRooms = ((RoomDaoImpl)roomDao).getAllWhere(roomsReservedQuery);
-            for(Room room : openRooms) {
-                System.out.println(room.getRoomName());
+            Set<Room> openRooms = ((RoomDaoImpl)roomDao).getAllWhere(sDate);
+            Set<Room> allRooms = ((RoomDaoImpl)roomDao).getAll();
+            //TODO: print popularity score, price, available or not,
+            // next available date, length, bed type, num beds, max occupancy
+            for(Room room : allRooms) {
+                room.displayRoom();
+                double score = ((RoomDaoImpl)roomDao).getPopularity(sDate, room.getRoomId());
+                System.out.println("    Popularity Score: " + score);
+                if(openRooms.contains(room)){
+                    System.out.println("    Available? Yes.");
+                }
+                else{
+                    System.out.println("    Available? No.");
+                    // only return one reservation
+                    //Set<Reservation> reservations = ((ReservationDaoImpl)resDao).getNextAvailable(sDate, room.getRoomId());
+                    //for(Reservation res: reservations){
+                        //System.out.println("    Next Date Available: " + res.getCheckOut());
+                        //int length = ((ReservationDaoImpl)resDao).getNextAvailableLength();
+                    }
+                }
+                System.out.println();
             }
             System.out.println();
 
