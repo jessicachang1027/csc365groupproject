@@ -194,15 +194,15 @@ public class CreditCardDaoImpl implements Dao<CreditCard> {
             //Date.valueOf("2010-01-31")
 
             CreditCard newCard
-                    = new CreditCard("1", "1", 4000, 0, true);
+                    = new CreditCard("aander65", "1", 4000, 0, true);
             creditCardDao.insert(newCard);
 
             newCard
-                    = new CreditCard("1", "2", 4000, 0, false);
+                    = new CreditCard("aander65", "2", 4000, 0, false);
             creditCardDao.insert(newCard);
 
             newCard
-                    = new CreditCard("2", "3", 4000, 400, true);
+                    = new CreditCard("kkrein", "3", 4000, 400, true);
             creditCardDao.insert(newCard);
             dm.close();
         } catch (SQLException e) {
