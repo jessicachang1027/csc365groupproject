@@ -30,6 +30,14 @@ public class Main {
         System.out.print("Enter option from list: ");
     }
 
+    private static void printManagerMenu()
+    {
+        System.out.println("Your options: ");
+        System.out.println("    View Revenue Statistics (v)");
+        System.out.println("    Quit (q)");
+        System.out.print("Enter option from list: ");
+    }
+
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
 
@@ -42,7 +50,7 @@ public class Main {
         try {
             DaoManager dm = DaoManager.getInstance();
             Dao<Customer> customerDao = dm.getCustomerDao();
-            while(!success) {
+            while (!success) {
                 printHomeMenu();
                 choice = in.next();
                 switch (choice) {
@@ -70,7 +78,7 @@ public class Main {
                         username = in.next();
                         System.out.println("Enter password: ");
                         password = in.next();
-                        customer = ((CustomerDaoImpl)customerDao).login(username, password);
+                        customer = ((CustomerDaoImpl) customerDao).login(username, password);
                         if (customer == null) {
                             System.out.println("User not found/Incorrect password. Try again");
                             success = false;
@@ -84,28 +92,57 @@ public class Main {
                         System.out.println("Thank you, bye!");
                         System.exit(0);
                         break;
+                    default:
+                        System.out.println("Invalid Input");
+                }
+                if (!success) {
+                    System.out.println("-->Please try again");
                 }
             }
 
-            printUserMenu();
-            choice = in.next();
-            Dao<Reservation> resDao = dm.getReservationDao();
-            switch (choice) {
-                case "a":
-                    showAvailability(in, resDao);
-                    break;
-                case "c":
-                    changeReservation(in, resDao);
-                    break;
-                case "v":
-                    showReservations(in, resDao, customer);
-                    break;
-                case "q":
-                    System.out.println("Thank you, bye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice. Try again");
-                    break;
+            boolean done = false;
+            while (!done)
+            {
+                Dao<Reservation> resDao = dm.getReservationDao();
+                if (user.equals("manager")) {
+                    printManagerMenu();
+                    choice = in.next();
+
+                    switch (choice) {
+                        case "v":
+                            // todo: display revenue stats
+                            break;
+                        case "q":
+                            System.out.println("Thank you, bye!");
+                            done = true;
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Try again");
+                            break;
+                    }
+                } else {
+                    printUserMenu();
+                    choice = in.next();
+
+                    switch (choice) {
+                        case "a":
+                            showAvailability(in, resDao);
+                            break;
+                        case "c":
+                            changeReservation(in, resDao);
+                            break;
+                        case "v":
+                            showReservations(in, resDao, customer);
+                            break;
+                        case "q":
+                            System.out.println("Thank you, bye!");
+                            done = true;
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Try again");
+                            break;
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
