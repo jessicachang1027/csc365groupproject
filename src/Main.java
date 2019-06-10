@@ -50,6 +50,7 @@ public class Main {
         try {
             DaoManager dm = DaoManager.getInstance();
             Dao<Customer> customerDao = dm.getCustomerDao();
+            Dao<CreditCard> creditCardDao = dm.getCreditCardDao();
             while(!success) {
                 printHomeMenu();
                 choice = in.next();
