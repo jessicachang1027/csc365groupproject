@@ -6,7 +6,7 @@ drop trigger if exists checkActive;
 drop trigger if exists checkCardOwner;
 
 CREATE TRIGGER chargeCard
-AFTER INSERT ON Reservations
+before INSERT ON Reservations
 FOR EACH ROW
    UPDATE CreditCard
       SET CreditCard.balance = (DATEDIFF(toDate(NEW.CheckOut), toDate(NEW.CheckIn))
@@ -17,16 +17,12 @@ WHERE EXISTS (SELECT * FROM Payment, Customers
 			   and NEW.code = Payment.resID);
                
 CREATE TRIGGER updateCharge
-AFTER update ON Reservations
+before update ON Reservations
 FOR EACH ROW
    UPDATE CreditCard
       SET CreditCard.balance = (DATEDIFF(toDate(NEW.CheckOut), toDate(NEW.CheckIn))
                 * NEW.rate) + CreditCard.balance
-                - (DATEDIFF(toDate(OLD.CheckOut), toDate(OLD.CheckIn)) * OLD.rate)
-WHERE EXISTS (SELECT * FROM Payment, Customers
-			   WHERE Payment.cardNum = CreditCard.cardNum
-			   and Payment.cID = Customers.username
-			   and NEW.code = Payment.resID);
+                - (DATEDIFF(toDate(OLD.CheckOut), toDate(OLD.CheckIn)) * OLD.rate);
       
 DELIMITER $    
 CREATE TRIGGER checkCharge
