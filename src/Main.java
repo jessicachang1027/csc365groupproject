@@ -178,6 +178,7 @@ public class Main {
     private static void makeReservation(Scanner in, Customer customer, Dao<Room> roomDao, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
         System.out.println("Do you want to make a reservation (r) or start a new search (d)?");
         System.out.print("Enter choice: ");
+        Payment payment;
         String choice = in.next();
         if (choice.equals("r")) {
             System.out.println("Enter room ID to reserve: ");
@@ -193,28 +194,31 @@ public class Main {
             int kids = in.nextInt();
             Reservation newRes = new Reservation("699AB", roomId, checkIn, checkOut, rate,
                     customer.getFirstName(), customer.getLastName(), adults, kids);
-            payForReservation(in, customer, newRes, resDao, paymentDao);
-            boolean added = resDao.insert(newRes);
-            if(added)
-            {
-                System.out.println("Your new reservation information: ");
-                newRes.displayReservation();
-            }
-            else
-            {
-                // todo: delete payment
-                makeReservation(in, customer, roomDao, resDao, paymentDao);
+            if(!newRes.checkinBeforeCheckout()) {
+                System.out.println("Check out date must be before check in date");
+            } else {
+                payment = payForReservation(in, customer, newRes, resDao, paymentDao);
+                boolean added = resDao.insert(newRes);
+                if (added) {
+                    System.out.println("Your new reservation information: ");
+                    newRes.displayReservation();
+                } else {
+                    paymentDao.delete(payment);
+                    makeReservation(in, customer, roomDao, resDao, paymentDao);
+                }
             }
 
         }
     }
 
-    private static void payForReservation(Scanner in, Customer customer, Reservation res, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
+    private static Payment payForReservation(Scanner in, Customer customer, Reservation res, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
         double price = res.getPrice();
         System.out.println("The total cost for your reservation is: " + price);
         System.out.println("Enter credit card number: ");
         String cardNum = in.next();
-        paymentDao.insert(new Payment(res.getReservationID(), customer.getUsername(), cardNum));
+        Payment payment = new Payment(res.getReservationID(), customer.getUsername(), cardNum);
+        paymentDao.insert(payment);
+        return payment;
     }
 
 

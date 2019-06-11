@@ -55,6 +55,22 @@ public class Reservation {
         }
     }
 
+    public Boolean checkinBeforeCheckout() {
+        try {
+            return dateDiffMillis() > 0;
+        } catch (ParseException e) {
+            System.out.println("Incorrect date format for reservation");
+            return false;
+        }
+    }
+
+    private long dateDiffMillis() throws ParseException {
+        Date dateIn = new SimpleDateFormat("dd-MMM-yy").parse(checkIn);
+        Date dateOut = new SimpleDateFormat("dd-MMM-yy").parse(checkOut);
+        return dateIn.getTime() - dateOut.getTime();
+
+    }
+
     public String getReservationID() {
         return reservationID;
     }
