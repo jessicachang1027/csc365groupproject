@@ -290,7 +290,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "DELETE FROM Reservation WHERE code=?");
+                    "DELETE FROM Reservations WHERE code=?");
             preparedStatement.setString(1, obj.getReservationID());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
