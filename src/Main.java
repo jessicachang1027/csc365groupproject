@@ -214,7 +214,6 @@ public class Main {
                     makeReservation(in, customer, roomDao, resDao, paymentDao);
                 }
             }
-
         }
     }
 
@@ -301,9 +300,9 @@ public class Main {
 
     private static void changeReservation(Scanner in, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
         System.out.print("Enter reservation number to change or cancel: ");
-        String num = in.next();
+        int num = in.nextInt();
 
-        Reservation res = resDao.getById(num.toUpperCase());
+        Reservation res = ((ReservationDaoImpl)resDao).getByCode(num);
         System.out.println("Here is your current reservation: ");
         res.displayReservation();
 
@@ -347,14 +346,14 @@ public class Main {
                 success = resDao.update(res);
                 break;
         }
-        if(!success)
-        {
-            changeReservation(in, resDao, paymentDao);
-        }
-        else
+        if(success)
         {
             System.out.println("Here is your new reservation information: ");
             res.displayReservation();
+        }
+        else
+        {
+            changeReservation(in, resDao, paymentDao);
         }
     }
 
