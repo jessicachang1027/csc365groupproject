@@ -272,7 +272,8 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
             successful = preparedStatement.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return false;
         } finally {
             try {
                 preparedStatement.close();
