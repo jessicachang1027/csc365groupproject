@@ -62,12 +62,14 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservations;
     }
 
-    public Set<Reservation> getAllWhere(String query) {
+    public Set<Reservation> getAllWhere(String firstname, String lastname) {
         Set<Reservation> reservations = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE " + query);
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE firstname = ? AND lastname = ?" );
+            preparedStatement.setString(1, firstname);
+            preparedStatement.setString(2, lastname);
             resultSet = preparedStatement.executeQuery();
             reservations = unpackResultSet(resultSet);
         } catch (SQLException e) {
@@ -87,45 +89,69 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservations;
     }
 
-    public String getNextAvailableDate(String date, String room){
-        String nextDate = null;
+    public int getNextAvailableLength(String date, String room){
+        int length = 0;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT X.checkout FROM " +
-                    "(SELECT x.checkout, DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
-                    "join (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?) AS X " +
-                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?)) as x " +
-                    "on R.room = x.room " +
-                    "WHERE STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
-                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y')) AS X " +
-                    "WHERE X.duration <= ALL " +
-                    "(SELECT DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
-                    "JOIN (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?) AS X " +
-                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?)) as x " +
-                    "on R.room = x.room " +
-                    "where STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
-                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y'))");
+            preparedStatement = this.conn.prepareStatement("select duration from " +
+                    "(select X.checkout,  DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(X.checkout, '%d-%b-%y')) as duration FROM" +
+                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as length from Reservations  " +
+                    "WHERE STR_TO_DATE(?, '%d-%b-%y')  BETWEEN STR_TO_DATE(checkin, '%d-%b-%y') AND STR_TO_DATE(checkout, '%d-%b-%y') " +
+                    "AND room = ?) AS X  " +
+                    "JOIN Reservations as R " +
+                    "ON R.room = X.room AND str_to_date(R.checkin, '%d-%b-%y') > str_to_date(X.checkout, '%d-%b-%y')) as X " +
+                    "WHERE X.duration <= ALL (select DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(X.checkout, '%d-%b-%y')) as duration FROM " +
+                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as length from Reservations  " +
+                    "WHERE STR_TO_DATE(?, '%d-%b-%y')  BETWEEN STR_TO_DATE(checkin, '%d-%b-%y') AND STR_TO_DATE(checkout, '%d-%b-%y') " +
+                    "AND room = ?) AS X  " +
+                    "JOIN Reservations as R " +
+                    "ON R.room = X.room AND str_to_date(R.checkin, '%d-%b-%y') > str_to_date(X.checkout, '%d-%b-%y'))");
             preparedStatement.setString(1, date);
             preparedStatement.setString(2, date);
             preparedStatement.setString(3, room);
             preparedStatement.setString(4, date);
             preparedStatement.setString(5, date);
             preparedStatement.setString(6, room);
-            preparedStatement.setString(7, date);
-            preparedStatement.setString(8, date);
-            preparedStatement.setString(9, room);
-            preparedStatement.setString(10, date);
-            preparedStatement.setString(11, date);
-            preparedStatement.setString(12, room);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            length = resultSet.getInt("duration");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return length;
+    }
+
+    public String getNextAvailableDate(String date, String room){
+        String nextDate = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT X.checkout FROM " +
+                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') >= STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?) AS X " +
+                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') >= STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)");
+            preparedStatement.setString(1, date);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, room);
+            preparedStatement.setString(4, date);
+            preparedStatement.setString(5, date);
+            preparedStatement.setString(6, room);
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
             nextDate = resultSet.getString("checkout");
@@ -146,48 +172,27 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return nextDate;
     }
 
-    public int getNextAvailableLength(String date, String room){
+    public int getAvailableLength(String date, String room){
         int length = 0;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT X.duration FROM " +
-                    "(SELECT x.checkout, DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
-                    "join (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
+            preparedStatement = this.conn.prepareStatement("SELECT X.next FROM " +
+                    "(SELECT *, DATEDIFF(STR_TO_DATE(checkin, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') >= STR_TO_DATE(?, '%d-%b-%y') " +
                     "AND room = ?) AS X " +
                     "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?)) as x " +
-                    "on R.room = x.room " +
-                    "WHERE STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
-                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y')) AS X " +
-                    "WHERE X.duration <= ALL " +
-                    "(SELECT DATEDIFF(STR_TO_DATE(R.checkin, '%d-%b-%y'), STR_TO_DATE(x.checkout, '%d-%b-%y')) as duration FROM Reservations as R " +
-                    "JOIN (SELECT * FROM (SELECT *, DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?) AS X " +
-                    "WHERE next <= ALL (SELECT DATEDIFF(STR_TO_DATE(checkout, '%d-%b-%y'), STR_TO_DATE(?, '%d-%b-%y')) as next from Reservations " +
-                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') > STR_TO_DATE(?, '%d-%b-%y') " +
-                    "AND room = ?)) as x " +
-                    "on R.room = x.room " +
-                    "where STR_TO_DATE(R.checkin, '%d-%b-%y') > STR_TO_DATE(x.checkout, '%d-%b-%y') " +
-                    "order by STR_TO_DATE(R.checkin, '%d-%b-%y'))");
+                    "WHERE STR_TO_DATE(checkin, '%d-%b-%y') >= STR_TO_DATE(?, '%d-%b-%y') " +
+                    "AND room = ?)");
             preparedStatement.setString(1, date);
             preparedStatement.setString(2, date);
             preparedStatement.setString(3, room);
             preparedStatement.setString(4, date);
             preparedStatement.setString(5, date);
             preparedStatement.setString(6, room);
-            preparedStatement.setString(7, date);
-            preparedStatement.setString(8, date);
-            preparedStatement.setString(9, room);
-            preparedStatement.setString(10, date);
-            preparedStatement.setString(11, date);
-            preparedStatement.setString(12, room);
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            length = resultSet.getInt("duration");
+            length = resultSet.getInt("next");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -314,23 +319,23 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
     public void printRevenue(int year)
     {
-        String sqlStatement = " (SELECT RoomName, JanRev, FebRev, MarRev, AprRev, MayRev, JunRev, \n" +
-                "\t\tJulRev, AugRev, SepRev, OctRev, NovRev, DecRev,\n" +
-                "        RoomName + JanRev + FebRev + MarRev + AprRev + MayRev + JunRev + \n" +
-                "\t\tJulRev + AugRev + SepRev + OctRev + NovRev + DecRev as TotalRev\n" +
-                " FROM\n" +
-                "\t(SELECT RoomName, getMonthRev(1, RoomId, inYear) as JanRev, getMonthRev(2, RoomId, inYear) as FebRev,\n" +
-                "\t\t\tgetMonthRev(3, RoomId, inYear) as MarRev, getMonthRev(4, RoomId, inYear) as AprRev,\n" +
-                "\t\t\tgetMonthRev(5, RoomId, inYear) as MayRev, getMonthRev(6, RoomId, inYear) as JunRev,\n" +
-                "\t\t\tgetMonthRev(7, RoomId, inYear) as JulRev, getMonthRev(8, RoomId, inYear) as AugRev,\n" +
-                "\t\t\tgetMonthRev(9, RoomId, inYear) as SepRev, getMonthRev(10, RoomId, inYear) as OctRev,\n" +
-                "\t\t\tgetMonthRev(11, RoomId, inYear) as NovRev, getMonthRev(12, RoomId, inYear) as DecRev\n" +
-                "\tFROM Rooms\n" +
-                "    UNION SELECT 'Total:', getTotalRev(1, inYear) as JanRev, getTotalRev(2, inYear) as FebRev,\n" +
-                "\t\t\tgetTotalRev(3, inYear) as MarRev, getTotalRev(4, inYear) as AprRev,\n" +
-                "\t\t\tgetTotalRev(5, inYear) as MayRev, getTotalRev(6, inYear) as JunRev,\n" +
-                "\t\t\tgetTotalRev(7, inYear) as JulRev, getTotalRev(8, inYear) as AugRev,\n" +
-                "\t\t\tgetTotalRev(9, inYear) as SepRev, getTotalRev(10, inYear) as OctRev,\n" +
+        String sqlStatement = " (SELECT RoomName, JanRev, FebRev, MarRev, AprRev, MayRev, JunRev, " +
+                "\t\tJulRev, AugRev, SepRev, OctRev, NovRev, DecRev," +
+                "        RoomName + JanRev + FebRev + MarRev + AprRev + MayRev + JunRev + " +
+                "\t\tJulRev + AugRev + SepRev + OctRev + NovRev + DecRev as TotalRev" +
+                " FROM" +
+                "\t(SELECT RoomName, getMonthRev(1, RoomId, inYear) as JanRev, getMonthRev(2, RoomId, inYear) as FebRev," +
+                "\t\t\tgetMonthRev(3, RoomId, inYear) as MarRev, getMonthRev(4, RoomId, inYear) as AprRev," +
+                "\t\t\tgetMonthRev(5, RoomId, inYear) as MayRev, getMonthRev(6, RoomId, inYear) as JunRev," +
+                "\t\t\tgetMonthRev(7, RoomId, inYear) as JulRev, getMonthRev(8, RoomId, inYear) as AugRev," +
+                "\t\t\tgetMonthRev(9, RoomId, inYear) as SepRev, getMonthRev(10, RoomId, inYear) as OctRev," +
+                "\t\t\tgetMonthRev(11, RoomId, inYear) as NovRev, getMonthRev(12, RoomId, inYear) as DecRev" +
+                "\tFROM Rooms" +
+                "    UNION SELECT 'Total:', getTotalRev(1, inYear) as JanRev, getTotalRev(2, inYear) as FebRev," +
+                "\t\t\tgetTotalRev(3, inYear) as MarRev, getTotalRev(4, inYear) as AprRev," +
+                "\t\t\tgetTotalRev(5, inYear) as MayRev, getTotalRev(6, inYear) as JunRev," +
+                "\t\t\tgetTotalRev(7, inYear) as JulRev, getTotalRev(8, inYear) as AugRev," +
+                "\t\t\tgetTotalRev(9, inYear) as SepRev, getTotalRev(10, inYear) as OctRev," +
                 "\t\t\tgetTotalRev(11, inYear) as NovRev, getTotalRev(12, inYear) as DecRev) as revs)";
         sqlStatement = sqlStatement.replace("inYear", Integer.toString(year));
         PreparedStatement preparedStatement = null;

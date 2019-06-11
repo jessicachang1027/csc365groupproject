@@ -189,6 +189,8 @@ public class Main {
                 System.out.println("    Popularity Score: " + score);
                 if(openRooms.contains(room)){
                     System.out.println("    Available? Yes.");
+                    int length = ((ReservationDaoImpl)resDao).getAvailableLength(sDate, room.getRoomId());
+                    System.out.println("    Available Length of Stay: " + length + " days");
                 }
                 else{
                     System.out.println("    Available? No.");
@@ -199,7 +201,6 @@ public class Main {
                 }
                 System.out.println();
             }
-            System.out.println();
 
         }
         else if (choice.equals("s")) {
@@ -282,9 +283,7 @@ public class Main {
 
     private static void showReservations(Scanner in, Dao<Reservation> resDao, Customer customer) {
         Set<Reservation> reservations = ((ReservationDaoImpl)resDao)
-                .getAllWhere("firstname= '" +
-                        customer.getFirstName() + "' and lastname='" +
-                        customer.getLastName() +"'");
+                .getAllWhere(customer.getFirstName(), customer.getLastName());
         for ( Reservation res: reservations) {
             res.displayReservation();
         }
