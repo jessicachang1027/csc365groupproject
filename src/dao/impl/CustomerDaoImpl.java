@@ -113,7 +113,7 @@ public class CustomerDaoImpl implements Dao<Customer> {
             preparedStatement.setString(2, obj.getLastName());
             preparedStatement.setString(3, obj.getUsername());
             preparedStatement.setString(4, obj.getPassword());
-            successful = preparedStatement.execute();
+            successful = !preparedStatement.execute();
         } catch (SQLException e) {
             //e.printStackTrace();
         } finally {
