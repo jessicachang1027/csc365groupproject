@@ -57,7 +57,7 @@ public class Reservation {
 
     public Boolean checkinBeforeCheckout() {
         try {
-            return dateDiffMillis() > 0;
+            return dateDiffMillis() < 0;
         } catch (ParseException e) {
             System.out.println("Incorrect date format for reservation");
             return false;
