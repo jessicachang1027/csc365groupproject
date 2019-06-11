@@ -1,5 +1,6 @@
 use sec05group06;
 drop trigger if exists chargeCard;
+drop trigger if exists updateCharge;
 drop trigger if exists checkCharge;
 drop trigger if exists checkActive;
 drop trigger if exists checkCardOwner;
@@ -10,6 +11,18 @@ FOR EACH ROW
    UPDATE CreditCard
       SET CreditCard.balance = (DATEDIFF(toDate(NEW.CheckOut), toDate(NEW.CheckIn))
                 * NEW.rate) + CreditCard.balance
+WHERE EXISTS (SELECT * FROM Payment, Customers
+			   WHERE Payment.cardNum = CreditCard.cardNum
+			   and Payment.cID = Customers.username
+			   and NEW.code = Payment.resID);
+               
+CREATE TRIGGER updateCharge
+AFTER update ON Reservations
+FOR EACH ROW
+   UPDATE CreditCard
+      SET CreditCard.balance = (DATEDIFF(toDate(NEW.CheckOut), toDate(NEW.CheckIn))
+                * NEW.rate) + CreditCard.balance
+                - (DATEDIFF(toDate(OLD.CheckOut), toDate(OLD.CheckIn)) * OLD.rate)
 WHERE EXISTS (SELECT * FROM Payment, Customers
 			   WHERE Payment.cardNum = CreditCard.cardNum
 			   and Payment.cID = Customers.username
