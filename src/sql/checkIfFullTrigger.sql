@@ -14,7 +14,7 @@ BEGIN
 						and toDate(NEW.CheckOut) > toDate(Reservations.CheckIn))
 						or (toDate(NEW.CheckIn) < toDate(Reservations.CheckOut)
 							and toDate(NEW.CheckIn) >= toDate(Reservations.CheckIn))))) THEN
-      SIGNAL SQLSTATE '11111'
+      SIGNAL SQLSTATE '11110'
       SET MESSAGE_TEXT = 'That room is unavailable. Please try again';
    END IF;
 END$
