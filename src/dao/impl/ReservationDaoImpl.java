@@ -258,7 +258,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         ResultSet resultSet = null;
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "UPDATE Reservation SET room=?, checkin=?, checkout=?, Rate=?, lastname=?, " +
+                    "UPDATE Reservations SET room=?, checkin=?, checkout=?, Rate=?, lastname=?, " +
                             "firstname=?, Adults=?, Kids=? WHERE code=?");
             preparedStatement.setString(1, obj.getRoomID());
             preparedStatement.setString(2, obj.getCheckIn());
@@ -273,7 +273,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             successful = preparedStatement.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
+            successful = false;
         } finally {
             try {
                 preparedStatement.close();
@@ -281,6 +281,8 @@ public class ReservationDaoImpl implements Dao<Reservation> {
                 e.printStackTrace();
             }
         }
+        // todo: remove this print
+        System.out.println(successful);
         return successful;
     }
 

@@ -26,7 +26,7 @@ BEFORE UPDATE ON Reservations
 FOR EACH ROW
 BEGIN
    IF (EXISTS (select * from Reservations
-				where Reservations.room = NEW.room
+				where Reservations.room = NEW.room and OLD.code != Reservations.code
 					and ((toDate(NEW.CheckOut) <= toDate(Reservations.CheckOut)
 						and toDate(NEW.CheckOut) > toDate(Reservations.CheckIn))
 						or (toDate(NEW.CheckIn) < toDate(Reservations.CheckOut)
