@@ -305,6 +305,7 @@ public class Main {
         System.out.println("   Change room (r)");
 
         String choice = in.next();
+        boolean success = false;
         switch(choice) {
             case "x":
                 resDao.delete(res);
@@ -315,26 +316,32 @@ public class Main {
                 //TODO: Check all reservations to make sure the room/date is still available
                 String newCheckin = in.next();
                 res.setCheckIn(newCheckin);
-                resDao.update(res);
+                success = resDao.update(res);
                 break;
             case "o":
                 System.out.println("What is the new checkout date?");
                 //TODO: Check all reservations to make sure the room/date is still available
                 String newCheckout = in.next();
                 res.setCheckOut(newCheckout);
-                resDao.update(res);
+                success = resDao.update(res);
                 break;
             case "r":
                 System.out.println("What is the new room code you are asking for?");
                 //TODO: Check all reservations to make sure the room/date is still available
                 String newRoom = in.next();
                 res.setRoomID(newRoom);
-                resDao.update(res);
+                success = resDao.update(res);
                 break;
         }
-
-        System.out.println("Here is your new reservation information: ");
-        res.displayReservation();
+        if(!success)
+        {
+            changeReservation(in, resDao, paymentDao);
+        }
+        else
+        {
+            System.out.println("Here is your new reservation information: ");
+            res.displayReservation();
+        }
     }
 
     private static void showReservations(Scanner in, Dao<Reservation> resDao, Customer customer) {
