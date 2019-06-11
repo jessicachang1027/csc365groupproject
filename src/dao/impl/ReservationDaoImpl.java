@@ -43,6 +43,33 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return reservation;
     }
 
+    public Reservation getByCode(int code) {
+        Reservation reservation = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Reservations WHERE code=?");
+            preparedStatement.setInt(1, code);
+            resultSet = preparedStatement.executeQuery();
+            Set<Reservation> reservations = unpackResultSet(resultSet);
+            reservation = (Reservation) reservations.toArray()[0];
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reservation;
+    }
+
     public Set<Reservation> getAll() {
         Set<Reservation> reservations = null;
         PreparedStatement preparedStatement = null;
@@ -288,7 +315,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
     }
 
     public Boolean update(Reservation obj) {
-        Boolean successful = false;
+        Boolean successful = true;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
@@ -305,7 +332,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             preparedStatement.setInt(8, obj.getKids());
             preparedStatement.setInt(9, obj.getReservationID());
 
-            successful = !preparedStatement.execute();
+            preparedStatement.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             successful = false;
