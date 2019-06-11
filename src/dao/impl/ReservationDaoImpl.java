@@ -216,7 +216,8 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return length;
     }
 
-    public Boolean insert(Reservation obj) {
+    public Boolean insert(Reservation obj)
+    {
         Boolean successful = false;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -237,8 +238,10 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
             successful = preparedStatement.execute();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+            successful = false;
         } finally {
             try {
                 preparedStatement.close();
