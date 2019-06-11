@@ -1,6 +1,7 @@
 import dao.Dao;
 import dao.DaoManager;
 import dao.impl.CustomerDaoImpl;
+import dao.impl.PaymentDaoImpl;
 import dao.impl.ReservationDaoImpl;
 import dao.impl.RoomDaoImpl;
 import objects.*;
@@ -192,14 +193,17 @@ public class Main {
             int adults = in.nextInt();
             System.out.println("Enter number of kids: ");
             int kids = in.nextInt();
-            Reservation newRes = new Reservation((roomId+checkIn).toUpperCase(), roomId, checkIn, checkOut, rate,
+            Reservation newRes = new Reservation(roomId, checkIn, checkOut, rate,
                     customer.getFirstName(), customer.getLastName(), adults, kids);
             if(!newRes.checkinBeforeCheckout()) {
                 System.out.println("Check out date must be before check in date");
             } else {
                 payment = payForReservation(in, customer, newRes, resDao, paymentDao);
-                boolean added = resDao.insert(newRes);
-                if (added) {
+                boolean success = resDao.insert(newRes);
+                if (success) {
+                    int code = ((ReservationDaoImpl)resDao).getCode(newRes);
+                    newRes.setReservationID(code);
+                    ((PaymentDaoImpl)paymentDao).updateReservationCode(newRes.getReservationID());
                     System.out.println("Your new reservation information: ");
                     newRes.displayReservation();
                 } else {
@@ -219,8 +223,10 @@ public class Main {
         System.out.println("Enter credit card number: ");
         String cardNum = in.next();
         Payment payment = new Payment(res.getReservationID(), customer.getUsername(), cardNum);
+        System.out.println();
         System.out.println("Your final payment is:");
         payment.printFields();
+        System.out.println();
         Boolean error = paymentDao.insert(payment);
         if (error){
             System.out.println("ERROR: This payment has already been made.");
@@ -247,7 +253,6 @@ public class Main {
                     System.out.println("    Available? Yes.");
                     int length = ((ReservationDaoImpl)resDao).getAvailableLength(sDate, room.getRoomId());
                     System.out.println("    Available Length of Stay: " + length + " days");
-                    System.out.println("Room Code: " + room.getRoomId());
                 }
                 else{
                     System.out.println("    Available? No.");
@@ -324,7 +329,7 @@ public class Main {
                 System.out.println("What is the new checkin date?");
                 String newCheckin = in.next();
                 res.setCheckIn(newCheckin);
-                res.setReservationID();
+                //res.setReservationID();
                 success = resDao.update(res);
                 break;
             case "o":
@@ -337,7 +342,7 @@ public class Main {
                 System.out.println("What is the new room code you are asking for?");
                 String newRoom = in.next();
                 res.setRoomID(newRoom);
-                res.setReservationID();
+               // res.setReservationID();
                 success = resDao.update(res);
                 break;
         }
