@@ -69,7 +69,7 @@ public class RoomDaoImpl implements Dao<Room> {
             preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms WHERE RoomId not in " +
                     "(SELECT room from Reservations " +
                     "WHERE STR_TO_DATE(?, '%d-%b-%y') "+
-                    "BETWEEN STR_TO_DATE(checkIn, '%d-%b-%y') and STR_TO_DATE(checkout, '%d-%b-%y') "+
+                    "BETWEEN STR_TO_DATE(checkIn, '%d-%b-%y') and DATE_SUB(STR_TO_DATE(checkout, '%d-%b-%y'), INTERVAL 1 DAY) "+
                     "order by room)");
             preparedStatement.setString(1, date);
             resultSet = preparedStatement.executeQuery();
