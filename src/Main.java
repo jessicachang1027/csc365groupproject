@@ -192,7 +192,7 @@ public class Main {
             int adults = in.nextInt();
             System.out.println("Enter number of kids: ");
             int kids = in.nextInt();
-            Reservation newRes = new Reservation("699AB", roomId, checkIn, checkOut, rate,
+            Reservation newRes = new Reservation(roomId+checkIn, roomId, checkIn, checkOut, rate,
                     customer.getFirstName(), customer.getLastName(), adults, kids);
             if(!newRes.checkinBeforeCheckout()) {
                 System.out.println("Check out date must be before check in date");
