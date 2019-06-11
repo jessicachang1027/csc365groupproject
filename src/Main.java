@@ -27,6 +27,7 @@ public class Main {
     }
 
     private static void printUserMenu() {
+        System.out.println();
         System.out.println("Your options: ");
         System.out.println("    Search Room Availability (a)");
         System.out.println("    Change/Cancel Reservation (c)");
@@ -363,5 +364,6 @@ public class Main {
         for ( Reservation res: reservations) {
             res.displayReservation();
         }
+        if (reservations.isEmpty()) System.out.println("You have made no reservations.");
     }
 }
