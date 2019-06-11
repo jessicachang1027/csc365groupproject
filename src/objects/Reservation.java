@@ -47,6 +47,7 @@ public class Reservation {
 
     public void displayReservation() {
         System.out.println("Reservation Number: " + reservationID);
+        System.out.println("RoomID: " + roomID);
         System.out.println("Check in date: " + checkIn);
         System.out.println("Check out date: " + checkOut);
         System.out.println("Rate: " + rate);
