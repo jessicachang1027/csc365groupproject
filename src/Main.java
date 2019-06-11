@@ -198,7 +198,7 @@ public class Main {
             System.out.println("Enter number of kids: ");
             int kids = in.nextInt();
             Reservation newRes = new Reservation(roomId, checkIn, checkOut, rate,
-                    customer.getFirstName(), customer.getLastName(), adults, kids);
+                    customer.getLastName(), customer.getFirstName(), adults, kids);
             if(!newRes.checkinBeforeCheckout()) {
                 System.out.println("Check out date must be before check in date");
             } else {
@@ -291,7 +291,8 @@ public class Main {
                     numBeds, numOccupants);
 
             for(Room room : specificRooms) {
-                System.out.println(room.getRoomName());
+                System.out.println();
+                System.out.println(room.getRoomName() + " (" + room.getRoomId() + ")");
             }
             makeReservation(in, customer, roomDao, resDao, paymentDao);
             System.out.println();

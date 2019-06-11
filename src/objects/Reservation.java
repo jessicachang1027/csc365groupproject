@@ -20,7 +20,7 @@ public class Reservation {
 
     public Reservation(String roomID, String checkIn,
                        String checkOut, double rate,
-                       String firstname, String lastname, int adults, int kids) {
+                       String lastname, String firstname, int adults, int kids) {
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.roomID = roomID;
@@ -33,7 +33,7 @@ public class Reservation {
 
     public Reservation(int reservationID, String roomID, String checkIn,
                        String checkOut, double rate,
-                       String firstname, String lastname, int adults, int kids) {
+                       String lastname, String firstname, int adults, int kids) {
         this.reservationID = reservationID;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
