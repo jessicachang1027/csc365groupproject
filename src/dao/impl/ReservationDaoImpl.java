@@ -270,7 +270,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             preparedStatement.setInt(8, obj.getKids());
             preparedStatement.setString(9, obj.getReservationID());
 
-            successful = preparedStatement.execute();
+            successful = !preparedStatement.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             successful = false;

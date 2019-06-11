@@ -79,6 +79,10 @@ public class Reservation {
         this.reservationID = reservationID;
     }
 
+    public void setReservationID() {
+        this.reservationID = (roomID+checkIn).toUpperCase();
+    }
+
     public String getCheckIn() {
         return checkIn;
     }

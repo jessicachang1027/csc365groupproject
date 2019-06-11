@@ -203,7 +203,7 @@ public class Main {
                     System.out.println("Your new reservation information: ");
                     newRes.displayReservation();
                 } else {
-                    //TODO: Fix this
+                    //TODO: Fix payment failing message
                     System.out.println("Your payment failed. Try again. ");
                     paymentDao.delete(payment);
                     makeReservation(in, customer, roomDao, resDao, paymentDao);
@@ -318,6 +318,7 @@ public class Main {
                 //TODO: Check all reservations to make sure the room/date is still available
                 String newCheckin = in.next();
                 res.setCheckIn(newCheckin);
+                res.setReservationID();
                 success = resDao.update(res);
                 break;
             case "o":
@@ -332,6 +333,7 @@ public class Main {
                 //TODO: Check all reservations to make sure the room/date is still available
                 String newRoom = in.next();
                 res.setRoomID(newRoom);
+                res.setReservationID();
                 success = resDao.update(res);
                 break;
         }
