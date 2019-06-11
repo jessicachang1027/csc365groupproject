@@ -1,9 +1,13 @@
+package dao.impl;
+
+import dao.Dao;
+import objects.Customer;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class CustomerDaoImpl implements Dao<Customer> {
@@ -185,10 +189,10 @@ public class CustomerDaoImpl implements Dao<Customer> {
 
     public static void main(String[] args) {
 //        try {
-            //Connection conn = ConnectionFactory.getConnection();
-            //CustomerDaoImpl customerDao = new CustomerDaoImpl(conn);
-//            DaoManager dm = DaoManager.getInstance();
-//            Dao<Customer> customerDao = dm.getCustomerDao();
+            //Connection conn = Dao.ConnectionFactory.getConnection();
+            //Dao.Impl.CustomerDaoImpl customerDao = new Dao.Impl.CustomerDaoImpl(conn);
+//            Dao.Dao.DaoManager dm = Dao.Dao.DaoManager.getInstance();
+//            Dao.Dao<Customer> customerDao = dm.getCustomerDao();
 //            Customer customer = customerDao.getById(2);
 //            System.out.println(customer.getFirstName());
 //            Set<Customer> customers = customerDao.getAll();

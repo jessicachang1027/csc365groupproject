@@ -1,3 +1,9 @@
+package dao.impl;
+
+import dao.Dao;
+import dao.DaoManager;
+import objects.Room;
+
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -272,8 +278,8 @@ public class RoomDaoImpl implements Dao<Room> {
 
     public static void main(String[] args) {
         try {
-            //Connection conn = ConnectionFactory.getConnection();
-            //RoomDaoImpl roomDao = new RoomDaoImpl(conn);
+            //Connection conn = Dao.ConnectionFactory.getConnection();
+            //Dao.Impl.RoomDaoImpl roomDao = new Dao.Impl.RoomDaoImpl(conn);
             DaoManager dm = DaoManager.getInstance();
             Dao<Room> roomDao = dm.getRoomDao();
             //Room room = roomDao.getById(1);

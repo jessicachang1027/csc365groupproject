@@ -1,3 +1,9 @@
+package dao.impl;
+
+import dao.Dao;
+import dao.DaoManager;
+import objects.Payment;
+
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -150,8 +156,8 @@ public class PaymentDaoImpl implements Dao<Payment> {
 
     public static void main(String[] args) {
         try {
-            //Connection conn = ConnectionFactory.getConnection();
-            //PaymentDaoImpl paymentDao = new PaymentDaoImpl(conn);
+            //Connection conn = Dao.ConnectionFactory.getConnection();
+            //Dao.Impl.PaymentDaoImpl paymentDao = new Dao.Impl.PaymentDaoImpl(conn);
             DaoManager dm = DaoManager.getInstance();
             Dao<Payment> paymentDao = dm.getPaymentDao();
             //Payment payment = paymentDao.getById(1);

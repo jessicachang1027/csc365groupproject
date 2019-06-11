@@ -1,4 +1,4 @@
-import java.sql.Date;
+package objects;
 
 public class Reservation {
 

@@ -1,7 +1,14 @@
-import java.sql.Connection;
-import java.sql.Date;
+import dao.Dao;
+import dao.DaoManager;
+import dao.impl.CustomerDaoImpl;
+import dao.impl.ReservationDaoImpl;
+import dao.impl.RoomDaoImpl;
+import objects.CreditCard;
+import objects.Customer;
+import objects.Reservation;
+import objects.Room;
+
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;

@@ -1,3 +1,8 @@
+package dao.impl;
+
+import objects.Customer;
+import dao.CachedDao;
+
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;

@@ -1,3 +1,5 @@
+package objects;
+
 public class Payment {
 
     private String reservationId;

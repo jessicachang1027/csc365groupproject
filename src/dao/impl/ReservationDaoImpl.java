@@ -1,3 +1,9 @@
+package dao.impl;
+
+import dao.Dao;
+import dao.DaoManager;
+import objects.Reservation;
+
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -372,8 +378,8 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
     public static void main(String[] args) {
         try {
-            //Connection conn = ConnectionFactory.getConnection();
-            //ReservationDaoImpl reservationDao = new ReservationDaoImpl(conn);
+            //Connection conn = Dao.ConnectionFactory.getConnection();
+            //Dao.Impl.ReservationDaoImpl reservationDao = new Dao.Impl.ReservationDaoImpl(conn);
             DaoManager dm = DaoManager.getInstance();
             Dao<Reservation> reservationDao = dm.getReservationDao();
             //Reservation reservation = reservationDao.getById(1);

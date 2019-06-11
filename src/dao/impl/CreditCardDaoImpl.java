@@ -1,3 +1,9 @@
+package dao.impl;
+
+import dao.Dao;
+import objects.CreditCard;
+import dao.DaoManager;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -5,10 +11,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import java.sql.*;
-        import java.util.HashSet;
-        import java.util.Set;
-        import java.lang.*;
+import java.lang.*;
 
 public class CreditCardDaoImpl implements Dao<CreditCard> {
     private Connection conn;

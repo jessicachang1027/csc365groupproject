@@ -9,7 +9,7 @@ FOR EACH ROW
    UPDATE CreditCard
       SET CreditCard.balance = (DATEDIFF(toDate(NEW.CheckOut), toDate(NEW.CheckIn))
                 * NEW.rate) + CreditCard.balance
-WHERE EXISTS (SELECT * FROM Payment, Customers 
+WHERE EXISTS (SELECT * FROM Payment, Customers
 			   WHERE Payment.cardNum = CreditCard.cardNum
 			   and Payment.cID = Customers.username
 			   and NEW.code = Payment.resID);

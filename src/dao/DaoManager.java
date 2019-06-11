@@ -1,3 +1,8 @@
+package dao;
+
+import dao.impl.*;
+import objects.*;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
