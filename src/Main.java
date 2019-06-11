@@ -221,11 +221,12 @@ public class Main {
         Payment payment = new Payment(res.getReservationID(), customer.getUsername(), cardNum);
         System.out.println("Your final payment is:");
         payment.printFields();
-        paymentDao.insert(payment);
+        Boolean error = paymentDao.insert(payment);
+        if (error){
+            System.out.println("ERROR: This payment has already been made.");
+        }
         return payment;
     }
-
-
 
     private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao, Dao<Payment> paymentDao, Customer customer) {
         System.out.println("How do you want to search?");
@@ -238,8 +239,6 @@ public class Main {
             String sDate = getValidDate(in);
             Set<Room> openRooms = ((RoomDaoImpl)roomDao).getAllWhere(sDate);
             Set<Room> allRooms = ((RoomDaoImpl)roomDao).getAll();
-            //TODO: print popularity score, price, available or not,
-            // next available date, length, bed type, num beds, max occupancy
             for(Room room : allRooms) {
                 room.displayRoom();
                 double score = ((RoomDaoImpl)roomDao).getPopularity(sDate, room.getRoomId());
@@ -312,12 +311,17 @@ public class Main {
         boolean success = false;
         switch(choice) {
             case "x":
-                resDao.delete(res);
+                Boolean error = resDao.delete(res);
+                if(error){
+                    System.out.println("Error: Deleting reservation failed.");
+                }
+                else{
+                    System.out.println("Reservation deleted!");
+                }
                 break;
             case "i":
                 //prompt for new things:
                 System.out.println("What is the new checkin date?");
-                //TODO: Check all reservations to make sure the room/date is still available
                 String newCheckin = in.next();
                 res.setCheckIn(newCheckin);
                 res.setReservationID();
@@ -325,14 +329,12 @@ public class Main {
                 break;
             case "o":
                 System.out.println("What is the new checkout date?");
-                //TODO: Check all reservations to make sure the room/date is still available
                 String newCheckout = in.next();
                 res.setCheckOut(newCheckout);
                 success = resDao.update(res);
                 break;
             case "r":
                 System.out.println("What is the new room code you are asking for?");
-                //TODO: Check all reservations to make sure the room/date is still available
                 String newRoom = in.next();
                 res.setRoomID(newRoom);
                 res.setReservationID();
