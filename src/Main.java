@@ -24,6 +24,8 @@ public class Main {
         System.out.println("    Log In (l)");
         System.out.println("    Quit (q)");
         System.out.print("Enter option from list: ");
+        System.out.println();
+
     }
 
     private static void printUserMenu() {
@@ -34,6 +36,7 @@ public class Main {
         System.out.println("    View Reservations (v)");
         System.out.println("    Quit (q)");
         System.out.print("Enter option from list: ");
+        System.out.println();
     }
 
     private static void printManagerMenu()
@@ -78,7 +81,6 @@ public class Main {
                         }
                         user = username;
                         System.out.println("Welcome " + firstName + "!");
-                        dm.close();
                         break;
                     case "l":
                         System.out.println("Enter username: ");
@@ -149,6 +151,7 @@ public class Main {
                         case "q":
                             System.out.println("Thank you, bye!");
                             System.exit(0);
+                            dm.close();
                         default:
                             System.out.println("Invalid choice. Try again");
                             break;
@@ -178,7 +181,7 @@ public class Main {
     }
     
     private static void makeReservation(Scanner in, Customer customer, Dao<Room> roomDao, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
-        System.out.println("Do you want to make a reservation (r) or start a new search (d)?");
+        System.out.println("Do you want to make a reservation (r) or go back to menu (d) ?");
         System.out.print("Enter choice: ");
         Payment payment;
         String choice = in.next();
@@ -349,7 +352,7 @@ public class Main {
         }
         if(!success)
         {
-            changeReservation(in, resDao, paymentDao);
+            //changeReservation(in, resDao, paymentDao);
         }
         else
         {
@@ -364,6 +367,7 @@ public class Main {
         for ( Reservation res: reservations) {
             res.displayReservation();
         }
+        System.out.println();
         if (reservations.isEmpty()) System.out.println("You have made no reservations.");
     }
 }
