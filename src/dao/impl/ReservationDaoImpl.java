@@ -236,7 +236,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             preparedStatement.setInt(8, obj.getAdults());
             preparedStatement.setInt(9, obj.getKids());
 
-            successful = preparedStatement.execute();
+            successful = !preparedStatement.execute();
 
         } catch (SQLException e)
         {
@@ -281,8 +281,6 @@ public class ReservationDaoImpl implements Dao<Reservation> {
                 e.printStackTrace();
             }
         }
-        // todo: remove this print
-        System.out.println(successful);
         return successful;
     }
 
