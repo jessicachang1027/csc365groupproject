@@ -35,4 +35,12 @@ public class Payment {
     public void setCardNum(String cardNum) {
         this.cardNum = cardNum;
     }
+
+    public void printFields() {
+
+        System.out.println("Reservation Id: " + reservationId);
+        System.out.println("Customer Id: " + customerId);
+        System.out.println("Card Number: " + cardNum);
+
+    }
 }

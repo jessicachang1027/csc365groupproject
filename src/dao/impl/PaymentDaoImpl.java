@@ -79,7 +79,7 @@ public class PaymentDaoImpl implements Dao<Payment> {
             preparedStatement.setString(2, obj.getCustomerId());
             preparedStatement.setString(3, obj.getCardNum());
 
-            successful = preparedStatement.execute();
+            successful = !preparedStatement.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();

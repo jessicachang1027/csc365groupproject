@@ -219,6 +219,8 @@ public class Main {
         System.out.println("Enter credit card number: ");
         String cardNum = in.next();
         Payment payment = new Payment(res.getReservationID(), customer.getUsername(), cardNum);
+        System.out.println("Your final payment is:");
+        payment.printFields();
         paymentDao.insert(payment);
         return payment;
     }
