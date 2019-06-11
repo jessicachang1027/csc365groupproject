@@ -40,7 +40,7 @@ DELIMITER ;
 
 DELIMITER $    
 CREATE TRIGGER checkCardOwner
-AFTER INSERT ON Reservations
+BEFORE INSERT ON Reservations
 FOR EACH ROW
 BEGIN
    IF !(EXISTS (SELECT * FROM Payment, Customers, CreditCard
