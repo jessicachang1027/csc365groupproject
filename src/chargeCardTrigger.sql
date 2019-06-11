@@ -43,7 +43,7 @@ CREATE TRIGGER checkCardOwner
 AFTER INSERT ON Reservations
 FOR EACH ROW
 BEGIN
-   IF !(EXISTS (SELECT * FROM Payment, Customers 
+   IF !(EXISTS (SELECT * FROM Payment, Customers, CreditCard
 			   WHERE Payment.cardNum = CreditCard.cardNum
 			   and Payment.cID = Customers.username
 			   and NEW.code = Payment.resID
