@@ -3,10 +3,7 @@ import dao.DaoManager;
 import dao.impl.CustomerDaoImpl;
 import dao.impl.ReservationDaoImpl;
 import dao.impl.RoomDaoImpl;
-import objects.CreditCard;
-import objects.Customer;
-import objects.Reservation;
-import objects.Room;
+import objects.*;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -105,6 +102,7 @@ public class Main {
 
             Dao<Reservation> resDao = dm.getReservationDao();
             Dao<Room> roomDao = dm.getRoomDao();
+            Dao<Payment> paymentDao = dm.getPaymentDao();
             while(true) {
                 if(user.equals("manager"))
                 {
@@ -138,10 +136,10 @@ public class Main {
                     choice = in.next();
                     switch (choice) {
                         case "a":
-                            showAvailability(in, resDao, roomDao, customer);
+                            showAvailability(in, resDao, roomDao, paymentDao, customer);
                             break;
                         case "c":
-                            changeReservation(in, resDao);
+                            changeReservation(in, resDao, paymentDao);
                             break;
                         case "v":
                             showReservations(in, resDao, customer);
@@ -177,17 +175,17 @@ public class Main {
         return sDate;
     }
     
-    private static void makeReservation(Scanner in, Customer customer, Dao<Room> roomDao, Dao<Reservation> resDao) {
+    private static void makeReservation(Scanner in, Customer customer, Dao<Room> roomDao, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
         System.out.println("Do you want to make a reservation (r) or start a new search (d)?");
         System.out.print("Enter choice: ");
         String choice = in.next();
         if (choice.equals("r")) {
             System.out.println("Enter room ID to reserve: ");
             String roomId = in.next();
-            System.out.println("Enter date to check in (dd-mm-yy): ");
-            String checkIn = in.next();
-            System.out.println("Enter date to check out (dd-mm-yy): ");
-            String checkOut = in.next();
+            System.out.println("Enter date to check in (dd-MMM-yy): ");
+            String checkIn = getValidDate(in);
+            System.out.println("Enter date to check out (dd-MMM-yy): ");
+            String checkOut = getValidDate(in);
             double rate = roomDao.getById(roomId).getPrice();
             System.out.println("Enter number of adults: ");
             int adults = in.nextInt();
@@ -195,13 +193,24 @@ public class Main {
             int kids = in.nextInt();
             Reservation newRes = new Reservation("699AB", roomId, checkIn, checkOut, rate,
                     customer.getFirstName(), customer.getLastName(), adults, kids);
+            payForReservation(in, customer, newRes, resDao, paymentDao);
             boolean added = resDao.insert(newRes);
             System.out.println("Your new reservation information: ");
             newRes.displayReservation();
         }
     }
 
-    private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao, Customer customer) {
+    private static void payForReservation(Scanner in, Customer customer, Reservation res, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
+        double price = res.getPrice();
+        System.out.println("The total cost for your reservation is: " + price);
+        System.out.println("Enter credit card number: ");
+        String cardNum = in.next();
+        paymentDao.insert(new Payment(res.getReservationID(), customer.getUsername(), cardNum));
+    }
+
+
+
+    private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao, Dao<Payment> paymentDao, Customer customer) {
         System.out.println("How do you want to search?");
         System.out.println("    By Day (d)?");
         System.out.println("    By Specifications (s)?");
@@ -233,7 +242,7 @@ public class Main {
                 }
                 System.out.println();
             }
-            makeReservation(in, customer, roomDao, resDao);
+            makeReservation(in, customer, roomDao, resDao, paymentDao);
 
         }
         else if (choice.equals("s")) {
@@ -259,7 +268,7 @@ public class Main {
             for(Room room : specificRooms) {
                 System.out.println(room.getRoomName());
             }
-            makeReservation(in, customer, roomDao, resDao);
+            makeReservation(in, customer, roomDao, resDao, paymentDao);
             System.out.println();
         }
         else {
@@ -268,7 +277,7 @@ public class Main {
 
     }
 
-    private static void changeReservation(Scanner in, Dao<Reservation> resDao) {
+    private static void changeReservation(Scanner in, Dao<Reservation> resDao, Dao<Payment> paymentDao) {
         System.out.print("Enter reservation number to change or cancel: ");
         String num = in.next();
 

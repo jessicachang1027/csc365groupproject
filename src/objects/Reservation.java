@@ -1,5 +1,10 @@
 package objects;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 public class Reservation {
 
     private String reservationID;
@@ -35,6 +40,19 @@ public class Reservation {
         System.out.println("Number of Adults: " + adults);
         System.out.println("Number of Kids: " + kids);
         System.out.println();
+    }
+
+    public double getPrice() {
+        try {
+            Date dateIn = new SimpleDateFormat("dd-MMM-yy").parse(checkIn);
+            Date dateOut = new SimpleDateFormat("dd-MMM-yy").parse(checkOut);
+            long diffInMillies = Math.abs(dateIn.getTime() - dateOut.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            return rate * (diff);
+        } catch (ParseException e) {
+            System.out.println("Incorrect date format for reservation");
+            return Integer.MAX_VALUE;
+        }
     }
 
     public String getReservationID() {
