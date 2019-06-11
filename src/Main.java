@@ -131,7 +131,7 @@ public class Main {
                     choice = in.next();
                     switch (choice) {
                         case "a":
-                            showAvailability(in, resDao, roomDao);
+                            showAvailability(in, resDao, roomDao, customer);
                             break;
                         case "c":
                             changeReservation(in, resDao);
@@ -170,7 +170,31 @@ public class Main {
         return sDate;
     }
 
-    private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao) {
+    private static void makeReservation(Scanner in, Customer customer, Dao<Room> roomDao, Dao<Reservation> resDao) {
+        System.out.println("Do you want to make a reservation (r) or start a new search (d)?");
+        System.out.print("Enter choice: ");
+        String choice = in.next();
+        if (choice.equals("r")) {
+            System.out.println("Enter room ID to reserve: ");
+            String roomId = in.next();
+            System.out.println("Enter date to check in (dd-mm-yy): ");
+            String checkIn = in.next();
+            System.out.println("Enter date to check out (dd-mm-yy): ");
+            String checkOut = in.next();
+            double rate = roomDao.getById(roomId).getPrice();
+            System.out.println("Enter number of adults: ");
+            int adults = in.nextInt();
+            System.out.println("Enter number of kids: ");
+            int kids = in.nextInt();
+            Reservation newRes = new Reservation("699AB", roomId, checkIn, checkOut, rate,
+                    customer.getFirstName(), customer.getLastName(), adults, kids);
+            boolean added = resDao.insert(newRes);
+            System.out.println("Your new reservation information: ");
+            newRes.displayReservation();
+        }
+    }
+
+    private static void showAvailability(Scanner in, Dao<Reservation> resDao, Dao<Room> roomDao, Customer customer) {
         System.out.println("How do you want to search?");
         System.out.println("    By Day (d)?");
         System.out.println("    By Specifications (s)?");
@@ -179,21 +203,23 @@ public class Main {
         if (choice.equals("d")) {
             System.out.println("Enter date (dd-mmm-yy) : ");
             String sDate = getValidDate(in);
-            //TODO: get availability from database and print all rooms available
             String roomsReservedQuery = "RoomId not in (SELECT code from Reservations WHERE toDate('"
                     + sDate
                     + "') BETWEEN toDate(CheckIn) and toDate(Checkout) group by Room)";
             Set<Room> openRooms = ((RoomDaoImpl)roomDao).getAllWhere(roomsReservedQuery);
             for(Room room : openRooms) {
-                System.out.println(room.getRoomName());
+                System.out.println(room.getRoomName() + " (" + room.getRoomId() + ")");
             }
+            //TODO: get back to new search if d entered
+            makeReservation(in, customer, roomDao, resDao);
+
             System.out.println();
 
         }
         else if (choice.equals("s")) {
-            System.out.print("Enter check in date: ");
+            System.out.print("Enter check in date (dd-mmm-yy): ");
             String checkIn = getValidDate(in);
-            System.out.print("Enter check out date: ");
+            System.out.print("Enter check out date (dd-mmm-yy): ");
             String checkOut = getValidDate(in);
             System.out.print("Enter desired bed type: ");
             String bedType = in.next();
@@ -213,6 +239,8 @@ public class Main {
             for(Room room : specificRooms) {
                 System.out.println(room.getRoomName());
             }
+            makeReservation(in, customer, roomDao, resDao);
+
             System.out.println();
         }
         else {

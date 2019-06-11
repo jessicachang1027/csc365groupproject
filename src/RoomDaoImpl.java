@@ -14,7 +14,7 @@ public class RoomDaoImpl implements Dao<Room> {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms WHERE code=?");
+            preparedStatement = this.conn.prepareStatement("SELECT * FROM Rooms WHERE RoomId=?");
             preparedStatement.setString(1, code);
             resultSet = preparedStatement.executeQuery();
             Set<Room> rooms = unpackResultSet(resultSet);
