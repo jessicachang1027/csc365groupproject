@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Reservation {
 
-    private String reservationID;
+    private int reservationID;
     private String checkIn;
     private String checkOut;
     private String roomID;
@@ -18,7 +18,20 @@ public class Reservation {
     private int kids;
     //private String paymentId;
 
-    public Reservation(String reservationID, String roomID, String checkIn,
+    public Reservation(String roomID, String checkIn,
+                       String checkOut, double rate,
+                       String firstname, String lastname, int adults, int kids) {
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.roomID = roomID;
+        this.rate = rate;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.adults = adults;
+        this.kids = kids;
+    }
+
+    public Reservation(int reservationID, String roomID, String checkIn,
                        String checkOut, double rate,
                        String firstname, String lastname, int adults, int kids) {
         this.reservationID = reservationID;
@@ -71,16 +84,12 @@ public class Reservation {
 
     }
 
-    public String getReservationID() {
+    public int getReservationID() {
         return reservationID;
     }
 
-    public void setReservationID(String reservationID) {
+    public void setReservationID(int reservationID) {
         this.reservationID = reservationID;
-    }
-
-    public void setReservationID() {
-        this.reservationID = (roomID+checkIn).toUpperCase();
     }
 
     public String getCheckIn() {

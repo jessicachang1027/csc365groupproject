@@ -2,21 +2,21 @@ package objects;
 
 public class Payment {
 
-    private String reservationId;
+    private int reservationId;
     private String customerId;
     private String cardNum;
 
-    public Payment(String reservationId, String customerId, String cardNum) {
+    public Payment(int reservationId, String customerId, String cardNum) {
         this.reservationId = reservationId;
         this.customerId = customerId;
         this.cardNum = cardNum;
     }
 
-    public String getReservationId() {
+    public int getReservationId() {
         return reservationId;
     }
 
-    public void setReservationId(String reservationId) {
+    public void setReservationId(int reservationId) {
         this.reservationId = reservationId;
     }
 

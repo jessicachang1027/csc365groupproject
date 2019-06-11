@@ -216,28 +216,63 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         return length;
     }
 
-    public Boolean insert(Reservation obj)
+    public int getCode(Reservation obj)
     {
-        Boolean successful = false;
+        Integer code = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         try {
             preparedStatement = this.conn.prepareStatement(
-                    "INSERT INTO Reservations (code, room, checkin, checkout, " +
-                            "Rate, lastname, firstname, Adults, Kids) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            preparedStatement.setString(1, obj.getReservationID());
-            preparedStatement.setString(2, obj.getRoomID());
-            preparedStatement.setString(3, obj.getCheckIn());
-            preparedStatement.setString(4, obj.getCheckOut());
-            preparedStatement.setDouble(5, obj.getRate());
-            preparedStatement.setString(6, obj.getLastname());
-            preparedStatement.setString(7, obj.getFirstname());
-            preparedStatement.setInt(8, obj.getAdults());
-            preparedStatement.setInt(9, obj.getKids());
+                    "SELECT code FROM Reservations WHERE room = ? AND checkin = ? AND checkout = ? " +
+                            "AND Rate = ? AND lastname = ? AND firstname=? AND Adults=? AND Kids=?");
 
-            successful = !preparedStatement.execute();
+            preparedStatement.setString(1, obj.getRoomID());
+            preparedStatement.setString(2, obj.getCheckIn());
+            preparedStatement.setString(3, obj.getCheckOut());
+            preparedStatement.setDouble(4, obj.getRate());
+            preparedStatement.setString(5, obj.getLastname());
+            preparedStatement.setString(6, obj.getFirstname());
+            preparedStatement.setInt(7, obj.getAdults());
+            preparedStatement.setInt(8, obj.getKids());
 
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            code = resultSet.getInt("code");
+        } catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return code;
+    }
+
+    public Boolean insert(Reservation obj)
+    {
+        boolean successful = true;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            preparedStatement = this.conn.prepareStatement(
+                    "INSERT INTO Reservations (room, checkin, checkout, " +
+                            "Rate, lastname, firstname, Adults, Kids) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+            preparedStatement.setString(1, obj.getRoomID());
+            preparedStatement.setString(2, obj.getCheckIn());
+            preparedStatement.setString(3, obj.getCheckOut());
+            preparedStatement.setDouble(4, obj.getRate());
+            preparedStatement.setString(5, obj.getLastname());
+            preparedStatement.setString(6, obj.getFirstname());
+            preparedStatement.setInt(7, obj.getAdults());
+            preparedStatement.setInt(8, obj.getKids());
+
+            preparedStatement.execute();
         } catch (SQLException e)
         {
             System.out.println(e.getMessage());
@@ -268,7 +303,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
             preparedStatement.setString(6, obj.getFirstname());
             preparedStatement.setInt(7, obj.getAdults());
             preparedStatement.setInt(8, obj.getKids());
-            preparedStatement.setString(9, obj.getReservationID());
+            preparedStatement.setInt(9, obj.getReservationID());
 
             successful = !preparedStatement.execute();
         } catch (SQLException e) {
@@ -291,7 +326,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         try {
             preparedStatement = this.conn.prepareStatement(
                     "DELETE FROM Reservations WHERE code=?");
-            preparedStatement.setString(1, obj.getReservationID());
+            preparedStatement.setInt(1, obj.getReservationID());
             successful = preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -310,7 +345,7 @@ public class ReservationDaoImpl implements Dao<Reservation> {
 
         while(rs.next()) {
             Reservation reservation = new Reservation(
-                    rs.getString("code"),
+                    rs.getInt("code"),
                     rs.getString("room"),
                     rs.getString("checkin"),
                     rs.getString("checkout"),
@@ -380,52 +415,4 @@ public class ReservationDaoImpl implements Dao<Reservation> {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            //Connection conn = Dao.ConnectionFactory.getConnection();
-            //Dao.Impl.ReservationDaoImpl reservationDao = new Dao.Impl.ReservationDaoImpl(conn);
-            DaoManager dm = DaoManager.getInstance();
-            Dao<Reservation> reservationDao = dm.getReservationDao();
-            //Reservation reservation = reservationDao.getById(1);
-            //System.out.println(reservation);
-            //Set<Reservation> reservations = reservationDao.getAll();
-            //System.out.println(reservations);
-
-            //Date.valueOf("2010-01-31")
-
-            Reservation newReservation
-                    = new Reservation("3","RND", "23-SEP-10",
-                    "26-SEP-10", 100, "Alex", "Arriola", 1, 1);
-            reservationDao.insert(newReservation);
-
-            newReservation
-                    = new Reservation("69","HBB", "23-SEP-11",
-                    "26-SEP-11", 150, "Alex", "Arriola", 1, 1);
-            reservationDao.insert(newReservation);
-
-            newReservation
-                    = new Reservation("69","HBB", "26-SEP-11",
-                    "29-SEP-11", 155, "Alex", "Arriola", 1, 1);
-            reservationDao.insert(newReservation);
-
-//            reservations = reservationDao.getAll();
-//            System.out.println(reservations);
-//            reservation.setPhone("8052223456");
-//            reservationDao.update(reservation);
-//            reservations = reservationDao.getAll();
-//            System.out.println(reservations);
-//            Iterator<Reservation> reservationIterator = reservations.iterator();
-//            while (reservationIterator.hasNext()) {
-//                Reservation delReservation = reservationIterator.next();
-//                if (delReservation.getName().equals("Tom")) {
-//                    reservationDao.delete(delReservation);
-//                }
-//            }
-//            reservations = reservationDao.getAll();
-//            System.out.println(reservations);
-            dm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
