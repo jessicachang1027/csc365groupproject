@@ -20,8 +20,8 @@ BEFORE UPDATE ON CreditCard
 FOR EACH ROW
 BEGIN
    IF NEW.balance >= NEW.creditLim THEN
-      SIGNAL SQLSTATE '12345'
-      SET MESSAGE_TEXT = 'check constraint on creditLimit failed';
+      SIGNAL SQLSTATE '11113'
+      SET MESSAGE_TEXT = 'Your credit limit was exceeded. Please try again';
    END IF;
 END$
 DELIMITER ;
@@ -32,8 +32,8 @@ BEFORE UPDATE ON CreditCard
 FOR EACH ROW
 BEGIN
    IF !NEW.active THEN
-      SIGNAL SQLSTATE '12345'
-      SET MESSAGE_TEXT = 'check constraint on active failed';
+      SIGNAL SQLSTATE '11114'
+      SET MESSAGE_TEXT = 'Your card is not activated. Please try again';
    END IF;
 END$
 DELIMITER ;
@@ -48,8 +48,8 @@ BEGIN
 			   and Payment.cID = Customers.username
 			   and NEW.code = Payment.resID
                and CreditCard.customerID = Customers.username)) THEN
-      SIGNAL SQLSTATE '12345'
-      SET MESSAGE_TEXT = 'check constraint on card ownership failed';
+      SIGNAL SQLSTATE '11115'
+      SET MESSAGE_TEXT = 'That card is not under your name. Please try again';
    END IF;
 END$
 DELIMITER ;
