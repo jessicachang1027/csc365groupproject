@@ -195,8 +195,17 @@ public class Main {
                     customer.getFirstName(), customer.getLastName(), adults, kids);
             payForReservation(in, customer, newRes, resDao, paymentDao);
             boolean added = resDao.insert(newRes);
-            System.out.println("Your new reservation information: ");
-            newRes.displayReservation();
+            if(added)
+            {
+                System.out.println("Your new reservation information: ");
+                newRes.displayReservation();
+            }
+            else
+            {
+                // todo: undo payment
+                makeReservation(in, customer, roomDao, resDao, paymentDao);
+            }
+
         }
     }
 
