@@ -1,3 +1,4 @@
+use sec05group06;
 drop trigger if exists chargeCard;
 drop trigger if exists checkCharge;
 drop trigger if exists checkActive;

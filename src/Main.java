@@ -202,7 +202,7 @@ public class Main {
             }
             else
             {
-                // todo: undo payment
+                // todo: delete payment
                 makeReservation(in, customer, roomDao, resDao, paymentDao);
             }
 
